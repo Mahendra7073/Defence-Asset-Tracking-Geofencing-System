@@ -1,6 +1,6 @@
--- DEFENCE GIS TRACKING SYSTEM
--- Database: defence_gis
--- PostgreSQL + PostGIS
+--  DEFENCE GIS TRACKING SYSTEM
+--  Database: defence_gis
+--  PostgreSQL + PostGIS
 CREATE EXTENSION IF NOT EXISTS postgis;
 
 CREATE TABLE users (

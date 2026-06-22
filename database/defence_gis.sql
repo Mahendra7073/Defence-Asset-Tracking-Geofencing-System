@@ -3,7 +3,6 @@
 -- PostgreSQL + PostGIS
 CREATE EXTENSION IF NOT EXISTS postgis;
 
-
 CREATE TABLE users (
     id            SERIAL PRIMARY KEY,
     username      VARCHAR(50)  NOT NULL UNIQUE,
@@ -145,3 +144,34 @@ asset_id,
 ST_X(geom) AS longitude,
 ST_Y(geom) AS latitude
 FROM asset_positions;
+
+SELECT
+id,
+ST_AsText(path)
+FROM track_history;
+
+INSERT INTO track_history (
+    asset_id,
+    path,
+    started_at,
+    ended_at,
+    distance_m,
+    avg_speed,
+    point_count
+)
+VALUES (
+    1,
+    ST_GeomFromText(
+        'LINESTRING(
+            73.0243 26.2389,
+            73.0300 26.2450,
+            73.0400 26.2550
+        )',
+        4326
+    ),
+    NOW() - INTERVAL '10 minutes',
+    NOW(),
+    1500,
+    45,
+    3
+);

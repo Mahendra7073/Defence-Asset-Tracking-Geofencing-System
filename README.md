@@ -20,6 +20,34 @@ The database is designed to store and manage:
 * PostgreSQL 18
 * PostGIS 3.6
 
+* ---
+
+# Backend Module - Defence Asset Tracking APIs
+
+## Overview
+This module handles data processing, database connections, and serves live APIs to manage defence assets.
+
+---
+
+## Backend APIs & Endpoints
+
+### 1. Live Assets
+* **URL:** `http://localhost:8085/DefenceAssetTracking/getAssets`
+* **Method:** `GET`
+
+### 2. Geofence Zones
+* **URL:** `http://localhost:8085/DefenceAssetTracking/getGeofences`
+* **Method:** `GET`
+
+### 3. Breach Alerts
+* **URL:** `http://localhost:8085/DefenceAssetTracking/getAlerts`
+* **Method:** `GET`
+
+### 4. Update Location
+* **URL:** `http://localhost:8085/DefenceAssetTracking/updateLocation`
+* **Method:** `POST`
+* **Parameters:** `asset_code`, `latitude`, `longitude`
+
 ---
 
 ## Database Setup

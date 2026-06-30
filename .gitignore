@@ -50,6 +50,4 @@ geoserver/data_dir/
 *.temp
 logs/
 
-# ----- Temporary / Local Wiki Draft -----
-temp_wiki/
 

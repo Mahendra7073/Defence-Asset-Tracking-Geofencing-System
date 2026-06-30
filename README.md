@@ -171,10 +171,31 @@ Licensed under the [MIT License](LICENSE).
 
 ---
 
-## 👤 Author
-Developed and maintained by the DRDO GIS Tracking System Team.
+## 👥 DRDO Internship Team
 
----
+This project was developed as part of the DRDO Internship Program by a collaborative student team.
+
+### 3rd Year Students
+
+- **Mahendra Gurjar** — Computer Science & Engineering (CSE)
+- **Priyadarshini Choudhary** — Information Technology (IT)
+- **Shahina Parvin** — Computer Science & Engineering (CSE)
+
+### 2nd Year Students
+
+- **Gaurav Deora** — Computer Science & Engineering (CSE)
+- **Omprakash** — Computer Science & Engineering (CSE)
+- **Chandrika Solanki** — Information Technology (IT)
+- **Abhimanyu Singh Rajpurohit** — Information Technology (IT)
+- **Pinku Daila** — Artificial Intelligence & Data Science (AIDS)
+- **Kulwant Singh Rathore** — Electronics & Communication Engineering (ECC)
+
+**Total Team Members:** 9
+
+### Internship Mentor
+
+**Shri Shyam Lal**
+
 
 ## 💖 Acknowledgements
 Special thanks to the open-source GIS community, the creators of Leaflet.js, and the DRDO mentorship program team.

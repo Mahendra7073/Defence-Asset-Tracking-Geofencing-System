@@ -1,6 +1,14 @@
 # Defence GIS Tracking System
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
+```
+================================================================================
+                    DEFENCE ASSET TRACKING & GEOFENCING SYSTEM
+     Real-Time Telemetry Tracking • Perimeter Geofencing • Spatial Intelligence
+            Java • PostgreSQL • PostGIS • Apache Tomcat • Leaflet.js
+================================================================================
+```
+
+[![Build Status](https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System/actions/workflows/build.yml/badge.svg)](https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System/actions)
 [![Java Version](https://img.shields.io/badge/JDK-17-blue.svg)](https://adoptium.net/temurin/releases/?version=17)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-blue.svg)](https://www.postgresql.org/)
 [![PostGIS](https://img.shields.io/badge/PostGIS-3%2B-green.svg)](https://postgis.net/)
@@ -11,91 +19,106 @@ A production-grade, real-time spatial asset monitoring, alert generation, and ge
 
 ---
 
-## Architecture Overview
+## 📖 Navigation Index
+* [Architecture Documentation](docs/ARCHITECTURE.md)
+* [REST API Documentation](docs/API_DOCUMENTATION.md)
+* [Database Schema Reference](docs/DATABASE.md)
+* [Installation Guide](INSTALLATION.md)
+* [Tomcat Deployment Guide](DEPLOYMENT.md)
+* [Security Controls Policy](SECURITY.md)
+* [Troubleshooting Guide](TROUBLESHOOTING.md)
+* [Contributing Guidelines](CONTRIBUTING.md)
+* [Folder Tree Map](PROJECT_STRUCTURE.md)
+
+---
+
+## ⚡ Overview
+The Defence GIS Tracking System provides military command centers with spatial intelligence. By combining high-frequency coordinate ingestion with database-level geometric computations, the system processes fleet tracking parameters, alerts operators on perimeter breaches, and renders real-time Leaflet overlays without heavy framework dependency.
+
+---
+
+## ⚙️ Features
+- **Live Fleet Tracking:** Real-time updates of military vehicles, personnel, and drones on a Leaflet map.
+- **Dynamic Geofencing:** Restricted, warning, and safe polygon boundary calculations using PostGIS topological formulas.
+- **Micro-Animations:** Interactive map highlights that pulse geofence perimeters and fade unselected zones.
+- **Historical Route Playback:** Displays breadcrumb path logs and calculates distance measurements and speeds.
+- **KPI Dashboards:** KPI panels, warning counters, and charts showing active hardware parameters.
+- **Authorization Filters:** Session validation filters guarding all endpoints under `/api/*`.
+
+---
+
+## 🖼️ Application Interfaces (Screenshots)
+Place the visual screenshots inside the [docs/screenshots/](docs/screenshots/) directory to render them:
+
+* **Login Page:** `/docs/screenshots/login.png` — Credential portal input cards.
+* **Dashboard View:** `/docs/screenshots/dashboard.png` — Operational KPIs and alert summary metrics.
+* **Assets Registry:** `/docs/screenshots/assets.png` — Fleet logs and hardware categorization list.
+* **Live GIS Tracking:** `/docs/screenshots/tracking.png` — Live map screen showing current hardware coordinates.
+* **Geofence Editor:** `/docs/screenshots/geofence.png` — Polygon boundaries highlighting and statistics popup.
+* **Breach Alerts:** `/docs/screenshots/alerts.png` — Detailed unacknowledged alert triggers list.
+* **Route Historial Player:** `/docs/screenshots/routes.png` — Path player overlay showing traveling logs.
+* **Officers Accounts:** `/docs/screenshots/users.png` — System administrator user table list.
+
+*(See [screenshots guide](docs/screenshots/README.md) for size details.)*
+
+---
+
+## 🏗️ System Architecture
+The application uses a clean multi-tier structure to decouple map presentation from database queries:
 
 ```mermaid
 graph TD
-    Client[Web Browser / Leaflet Maps] <-->|HTTP JSON APIs| Servlet[Java Web Servlet Layer]
-    Servlet <-->|SQL Queries| DAO[Database Access Objects]
-    DAO <-->|Connection Pool| HikariCP[HikariCP Connection Pool]
-    HikariCP <-->|PostGIS Queries| DB[(PostgreSQL + PostGIS Database)]
-    DB -->|ST_Contains Triggers| AlertService[Alert Generation Trigger]
+    Client[Leaflet JS Map Client] <-->|HTTP JSON REST| Servlet[Java Servlets Controllers]
+    Servlet <-->|Strongly-Typed JDBC| DAO[Data Access Objects]
+    DAO <-->|HikariCP Connections| DB[(PostgreSQL + PostGIS Database)]
 ```
 
-The system separates concerns across three tiers:
-1. **Frontend (GIS Mapping Client):** Single Page Application using Leaflet for interactive rendering, custom layer overlays, historical route playback, and animated geofence visualisations.
-2. **Backend (API Service Layer):** Java Web application serving REST endpoints, managing secure user sessions, and processing coordinate telemetry.
-3. **Database (Spatial Engine):** PostgreSQL instance running PostGIS extensions. Handles spatial computations (polygon area, containment checks, route length calculation) directly in SQL.
+For complete sequence diagrams, context maps, and flows, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
-## Features
-
-- **Live Fleet Tracking:** Real-time updates of military vehicles, personnel, and drones on an OpenStreetMap interface.
-- **Dynamic Geofencing:** Safe, warning, and restricted polygon creation with instant boundary breach alert generation.
-- **Animated Map Highlights:** Fades unselected zones and pulses boundaries of active geofences during inspection.
-- **Historical Route Playback:** Displays breadcrumb paths and calculates traveled distance and average speeds.
-- **KPI Dashboards:** High-level charts, unacknowledged warning counters, and active asset statistics.
-- **User management:** Multi-user logins with ADMIN credentials and security authorization filters.
-
----
-
-## Technology Stack
+## 🛠️ Technology Stack
 
 | Component | Technology | Description |
 | --- | --- | --- |
-| **Frontend** | HTML5, Vanilla CSS, Vanilla JS | Sleek dark theme UI client with zero heavy framework bloat. |
-| **Mapping Engine** | Leaflet.js | Open-source interactive map framework. |
-| **Backend** | Java 17, Java Servlets, Maven | Core endpoint controllers. |
+| **Frontend** | HTML5, Vanilla CSS, Vanilla JS | Dark-themed, lightweight SPA client. |
+| **Mapping Engine** | Leaflet.js | GIS maps overlay rendering layer. |
+| **Backend API** | Java 17, Java Servlets, Maven | API endpoint processing. |
 | **Connection Pool**| HikariCP | High-performance JDBC connection management. |
-| **Serialization** | Google Gson | Fast JSON parsing and output. |
-| **Authentication** | BCrypt | Standard salted password hashing. |
-| **Database** | PostgreSQL 15+ & PostGIS 3+ | Relational data and spatial mapping functions. |
+| **Serialization** | Google Gson | JSON parsing and serialization utility. |
+| **Authentication** | BCrypt | Constant-time password verification hashing. |
+| **Database** | PostgreSQL 15+ & PostGIS 3+ | Spatial geometry storage and topological checks. |
 
 ---
 
-## Installation & Setup
+## 📥 Installation Summary
+Prerequisites include JDK 17, Maven 3.8+, Tomcat 9.0+, and PostgreSQL with PostGIS.
 
-For full installation guidelines, see the detailed [INSTALLATION.md](INSTALLATION.md).
+1. **Clone the project:**
+   ```bash
+   git clone https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System.git
+   ```
+2. **Database Setup:** Run migrations sequentially:
+   ```bash
+   psql -U postgres -f database/defence_gis.sql
+   psql -U postgres -d defence_gis -f database/migrations/V002__schema_fixes_and_geofencing.sql
+   # (Run V003, V004, V005 migrations in order)
+   ```
+3. **Configurations:** Add database connection settings to `backend/src/main/resources/db.properties`.
+4. **Compile & Deploy:**
+   ```bash
+   cd backend
+   mvn clean package
+   copy target/DefenceGIS.war %CATALINA_HOME%/webapps/
+   ```
 
-### 1. Database Initialization
-```bash
-# Connect to PostgreSQL and execute the base schema seed script
-psql -U postgres -f database/defence_gis.sql
-
-# Run migration files sequentially
-psql -U postgres -d defence_gis -f database/migrations/V002__schema_fixes_and_geofencing.sql
-psql -U postgres -d defence_gis -f database/migrations/V003__bcrypt_passwords_and_seed_data.sql
-psql -U postgres -d defence_gis -f database/migrations/V004__demo_data_expansion.sql
-psql -U postgres -d defence_gis -f database/migrations/V005__add_missing_geofence_fields.sql
-```
-
-### 2. Configure Database Credentials
-Create `backend/src/main/resources/db.properties` from template:
-```properties
-db.url=jdbc:postgresql://localhost:5432/defence_gis
-db.username=postgres
-db.password=YOUR_LOCAL_PASSWORD
-```
-
-### 3. Build & Run
-```bash
-# Compile and create the deployable WAR package
-cd backend
-mvn clean package
-
-# Deploy to Tomcat by copying the target WAR to Tomcat webapps folder
-copy target\DefenceGIS.war %CATALINA_HOME%\webapps\
-```
-
-Access the sign-in screen at:
-`http://localhost:8080/DefenceGIS/pages/login.html`
+*For detailed configurations, see [INSTALLATION.md](INSTALLATION.md) and [DEPLOYMENT.md](DEPLOYMENT.md).*
 
 ---
 
-## Default Credentials
+## 🔐 Default Credentials
 
-The following accounts are pre-seeded in the database:
+Pre-seeded database accounts:
 
 | Username | Password | Role | Description |
 | --- | --- | --- | --- |
@@ -105,37 +128,27 @@ The following accounts are pre-seeded in the database:
 
 ---
 
-## Folder Structure
-For complete folder documentation, see [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md).
+## 🚀 Future Scope
+- **Websockets Stream:** Replace long-polling routes with full-duplex WebSocket connections.
+- **Kafka Telemetry Buffer:** Integrate Kafka message streams to ingestion pipelines for high-throughput tracking.
+- **Audit Logs:** Add database-level log tables for administrative monitoring.
 
 ---
 
-## REST API Endpoints
-For detailed specifications of request/response objects, see [API_DOCUMENTATION.md](API_DOCUMENTATION.md).
+## 🤝 Contributing
+For commit rules, branch names, and PR procedures, please read the [CONTRIBUTING.md](CONTRIBUTING.md) guide.
 
 ---
 
-## Database Schema
-For tables, spatial indexes, and triggers reference, see [DATABASE_DOCUMENTATION.md](DATABASE_DOCUMENTATION.md).
+## 📄 License
+Licensed under the [MIT License](LICENSE).
 
 ---
 
-## Future Enhancements
-- **Websockets Integration:** Replace long polling with real-time WebSocket messaging for GPS coordinate feeds.
-- **Kafka Telemetry Broker:** Integrate Apache Kafka to support high-throughput message processing from tens of thousands of active field devices.
-- **Security Enhancements:** Add multi-factor authentication (MFA) and JWT-based request signatures.
+## 👤 Author
+Developed and maintained by the DRDO GIS Tracking System Team.
 
 ---
 
-## Contributing
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for branch policies, commit style conventions, and reviews procedures.
-
----
-
-## License
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-## Author
-Developed by the DRDO GIS Tracking System Team.
+## 💖 Acknowledgements
+Special thanks to the open-source GIS community, the creators of Leaflet.js, and the DRDO mentorship program team.

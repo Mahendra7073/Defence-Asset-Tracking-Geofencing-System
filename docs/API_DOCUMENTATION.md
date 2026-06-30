@@ -27,6 +27,8 @@ All endpoints under `/api/*` (except `/api/auth/login` and `/api/auth/session`) 
 ### POST `/auth/login`
 Authenticate user and create a session.
 
+* **Method:** `POST`
+* **URL:** `/auth/login`
 * **Headers:** `Content-Type: application/json`
 * **Body:**
 ```json
@@ -48,12 +50,21 @@ Authenticate user and create a session.
     }
 }
 ```
+* **Error Response (401 Unauthorized):**
+```json
+{
+    "status": "error",
+    "message": "Invalid username or password"
+}
+```
 
 ---
 
 ### POST `/auth/logout`
 Invalidate current session and sign out.
 
+* **Method:** `POST`
+* **URL:** `/auth/logout`
 * **Response (200 OK):**
 ```json
 {
@@ -67,6 +78,8 @@ Invalidate current session and sign out.
 ### GET `/auth/session`
 Check current active session state.
 
+* **Method:** `GET`
+* **URL:** `/auth/session`
 * **Response (200 OK):**
 ```json
 {
@@ -88,6 +101,8 @@ Check current active session state.
 ### GET `/dashboard`
 Fetch system-wide counters and alerts summary.
 
+* **Method:** `GET`
+* **URL:** `/dashboard`
 * **Response (200 OK):**
 ```json
 {
@@ -108,6 +123,8 @@ Fetch system-wide counters and alerts summary.
 ### GET `/assets`
 Fetch list of registered assets.
 
+* **Method:** `GET`
+* **URL:** `/assets`
 * **Query Parameters:**
   * `type` (optional): Filter assets by type (e.g. `vehicle`, `drone`, `person`, `tank`).
 * **Response (200 OK):**
@@ -133,6 +150,8 @@ Fetch list of registered assets.
 ### GET `/assets/{id}`
 Fetch detailed attributes of a single asset.
 
+* **Method:** `GET`
+* **URL:** `/assets/{id}`
 * **Response (200 OK):**
 ```json
 {
@@ -154,6 +173,8 @@ Fetch detailed attributes of a single asset.
 ### POST `/assets`
 Create a new defence asset.
 
+* **Method:** `POST`
+* **URL:** `/assets`
 * **Headers:** `Content-Type: application/json`
 * **Body:**
 ```json
@@ -165,7 +186,7 @@ Create a new defence asset.
     "status": "active"
 }
 ```
-* **Response (210 Created):**
+* **Response (201 Created):**
 ```json
 {
     "status": "success",
@@ -181,6 +202,8 @@ Create a new defence asset.
 ### PUT `/assets/{id}`
 Update existing asset attributes.
 
+* **Method:** `PUT`
+* **URL:** `/assets/{id}`
 * **Headers:** `Content-Type: application/json`
 * **Body:**
 ```json
@@ -205,6 +228,8 @@ Update existing asset attributes.
 ### DELETE `/assets/{id}`
 Delete a defence asset.
 
+* **Method:** `DELETE`
+* **URL:** `/assets/{id}`
 * **Response (200 OK):**
 ```json
 {
@@ -220,6 +245,8 @@ Delete a defence asset.
 ### POST `/positions`
 Ingest GPS coordinates from field assets and calculate geofence breaches.
 
+* **Method:** `POST`
+* **URL:** `/positions`
 * **Headers:** `Content-Type: application/json`
 * **Body:**
 ```json
@@ -263,6 +290,8 @@ Ingest GPS coordinates from field assets and calculate geofence breaches.
 ### GET `/positions/latest`
 Fetch latest coordinates for all active assets. Returns GeoJSON FeatureCollection.
 
+* **Method:** `GET`
+* **URL:** `/positions/latest`
 * **Response (200 OK):**
 ```json
 {
@@ -299,6 +328,8 @@ Fetch latest coordinates for all active assets. Returns GeoJSON FeatureCollectio
 ### GET `/geofences`
 Fetch all active geofence zones. Returns GeoJSON FeatureCollection.
 
+* **Method:** `GET`
+* **URL:** `/geofences`
 * **Response (200 OK):**
 ```json
 {
@@ -330,6 +361,8 @@ Fetch all active geofence zones. Returns GeoJSON FeatureCollection.
 ### GET `/geofences/{id}`
 Fetch rich details and statistics for a specific geofence zone.
 
+* **Method:** `GET`
+* **URL:** `/geofences/{id}`
 * **Response (200 OK):**
 ```json
 {
@@ -355,9 +388,11 @@ Fetch rich details and statistics for a specific geofence zone.
 ### GET `/alerts`
 Fetch warnings logs.
 
+* **Method:** `GET`
+* **URL:** `/alerts`
 * **Query Parameters:**
   * `unack` (optional): If `true`, returns only unacknowledged warnings.
-  * `severity` (optional): Filter by severity (e.g. `HIGH`, `MEDIUM`, `LOW`).
+  * `severity` (optional): Filter by severity (`HIGH`, `MEDIUM`, `LOW`).
   * `limit` (optional): Result limit (default: `50`).
 * **Response (200 OK):**
 ```json
@@ -387,6 +422,8 @@ Fetch warnings logs.
 ### PUT `/alerts/{id}/acknowledge`
 Acknowledge a specific alert.
 
+* **Method:** `PUT`
+* **URL:** `/alerts/{id}/acknowledge`
 * **Response (200 OK):**
 ```json
 {
@@ -400,6 +437,8 @@ Acknowledge a specific alert.
 ### PUT `/alerts/acknowledge-all`
 Acknowledge all unacknowledged alerts.
 
+* **Method:** `PUT`
+* **URL:** `/alerts/acknowledge-all`
 * **Response (200 OK):**
 ```json
 {
@@ -415,6 +454,8 @@ Acknowledge all unacknowledged alerts.
 ### GET `/tracks`
 Fetch historical breadcrumb route path of an asset. Returns GeoJSON Feature.
 
+* **Method:** `GET`
+* **URL:** `/tracks`
 * **Query Parameters:**
   * `assetId` (required): ID of the asset.
   * `start` (optional): Date (YYYY-MM-DD).
@@ -448,6 +489,8 @@ Fetch historical breadcrumb route path of an asset. Returns GeoJSON Feature.
 ### GET `/users`
 Fetch registered team members.
 
+* **Method:** `GET`
+* **URL:** `/users`
 * **Response (200 OK):**
 ```json
 {

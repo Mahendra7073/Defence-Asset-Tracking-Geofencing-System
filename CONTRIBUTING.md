@@ -1,100 +1,89 @@
-# Contributing to Defence GIS Tracking System
+# Contributing Guidelines - Defence GIS Tracking System
 
-Thank you for contributing to this DRDO internship project!
-
----
-
-## Team Structure
-
-| Role                | Responsibility                                          |
-| ------------------- | ------------------------------------------------------- |
-| **Project Lead**    | Architecture, code reviews, integration, documentation  |
-| **Frontend Dev**    | HTML/CSS/JS, Leaflet integration, UI pages              |
-| **Backend Dev**     | Java servlets, DAOs, services, API endpoints            |
-| **GIS Developer**   | GeoServer config, spatial queries, SLD styles, WMS/WFS  |
-| **Database Engineer** | Schema management, migrations, stored procedures, tuning |
-| **Tester**          | Test case writing, manual/automated testing, QA         |
+Thank you for contributing to this project! This document outlines coding conventions, branch management strategies, and review procedures to ensure code quality is preserved.
 
 ---
 
-## Development Workflow
+## Code of Conduct
+All developers are expected to maintain professional communication, write high-quality code, and participate constructively in code reviews.
 
-### 1. Pick a Task
-- Check `docs/task-allocation.md` for your assigned tasks.
-- Create a branch from `develop` using the naming convention below.
+---
 
-### 2. Branch Naming
+## Development Setup
+
+1. **System Setup:** Ensure JDK 17, Maven 3.8+, and PostgreSQL with PostGIS are active.
+2. **Clone Project:**
+   ```bash
+   git clone https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System.git
+   ```
+3. **Database Configuration:** Setup `db.properties` using the example template:
+   ```bash
+   cp backend/src/main/resources/db.properties.example backend/src/main/resources/db.properties
+   ```
+4. **Compile Build:** Verify compilation passes before staging work:
+   ```bash
+   cd backend
+   mvn clean package
+   ```
+
+---
+
+## Git Workflow & Branch Naming
+
+All changes must be developed in dedicated feature branches branched off `develop` (or `main` if direct feature merge):
+
 ```
-feature/<module>-<short-description>
-bugfix/<module>-<short-description>
-hotfix/<description>
+Branch Formats:
+  feature/<module>-<short-description>
+  bugfix/<module>-<short-description>
+  hotfix/<description>
 
 Examples:
   feature/backend-login-servlet
-  feature/frontend-dashboard-cards
-  bugfix/gis-wms-layer-404
+  feature/frontend-geofence-animation
+  bugfix/database-gist-index
 ```
 
-### 3. Commit Messages
-Use clear, descriptive commit messages:
+---
+
+## Commit Message Format
+
+Commit messages must indicate the modified component:
+
 ```
-[MODULE] Short description
+Format:
+  [Component] Descriptive summary of changes
 
 Examples:
-  [Backend] Implement LoginServlet with BCrypt auth
-  [Frontend] Add Leaflet map to tracking page
-  [Database] Add audit_log table migration
-  [GIS] Create geofence_zones SLD style
-  [Docs] Update API specification with alerts endpoint
-```
-
-### 4. Pull Requests
-- All code must be submitted via Pull Request.
-- At least 1 reviewer must approve before merge.
-- PR title should match commit convention: `[Module] Description`
-- Link any related GitHub Issues.
-
-### 5. Code Standards
-
-#### Java (Backend)
-- Follow Java naming conventions (camelCase methods, PascalCase classes).
-- Use `PreparedStatement` for all SQL queries (prevent SQL injection).
-- Never hardcode database credentials — use `db.properties`.
-- Add Javadoc comments to all public methods.
-- Use SLF4J for logging, never `System.out.println`.
-
-#### HTML/CSS/JavaScript (Frontend)
-- Use semantic HTML5 elements.
-- Follow the CSS design system in `frontend/assets/css/variables.css`.
-- Use `const`/`let`, never `var`.
-- Add JSDoc comments to all JavaScript functions.
-- Use unique `id` attributes on all interactive elements.
-
-#### SQL (Database)
-- Use lowercase for table and column names.
-- Use `snake_case` naming convention.
-- Always specify `SRID 4326` for PostGIS geometry columns.
-- Add indexes for frequently queried columns.
-
----
-
-## Getting Started
-
-```bash
-# Clone the repository
-git clone https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System.git
-
-# Follow the deployment guide
-# See: docs/deployment-guide.md
+  [Backend] Remove unused class TrackService and optimize imports
+  [Database] Add trg_sync_geofence_fields trigger to geofence_zones
+  [Frontend] Highlight active geofence and pulse boundaries on view action
+  [Docs] Add REST API endpoints specifications and sequence diagrams
 ```
 
 ---
 
-## Reporting Issues
+## Coding Standards
 
-Use GitHub Issues with these labels:
-- `bug` — Something broken
-- `feature` — New feature request
-- `enhancement` — Improvement to existing feature
-- `documentation` — Doc updates needed
-- `question` — Need clarification
+### 1. Java Backend
+- Use CamelCase naming for variables and methods.
+- Free database connections using `try-with-resources`.
+- Never execute raw string concatenations inside database queries (use `PreparedStatement` boundaries).
+- Use SLF4J logger instances for system auditing; `System.out.println` is forbidden.
+
+### 2. Frontend Client
+- Maintain dark-theme palette styling tokens from `frontend/assets/css/variables.css`.
+- Ensure Leaflet mapping controllers utilize parameters efficiently to minimize frame rate drop.
+- Provide descriptive `id` fields for interactive elements.
+
+### 3. SQL & Migrations
+- Use snake_case format for tables and fields.
+- Coordinate systems must enforce SRID 4326 for GIS projections.
+- Add performance indices for columns frequently matching filter criteria.
+
+---
+
+## Pull Request Guidelines
+- All PRs must pass automated build pipelines (`mvn clean package`).
+- Ensure no untracked temp files, IDE files, or binaries are committed.
+- Request review from at least one repository maintainer.

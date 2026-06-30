@@ -1,31 +1,59 @@
-# Security Review
+# Security Policy - Defence GIS Tracking System
 
-This document lists the security policies, implementations, and reviews incorporated inside the Defence GIS Tracking System.
+This document outlines the security controls, authentication mechanisms, data protection patterns, and recommendations implemented inside the Defence GIS Tracking System.
 
-## Security Controls
+## Supported Versions
 
-### 1. Authentication
-- User passwords are secure and hashed in the database using the **BCrypt** algorithm (strength cost factor `12`).
-- Plaintext passwords are never stored in the database.
-- Login authentication compares hashed strings using secure salt comparisons (`BCrypt.checkpw`) to prevent timing attacks.
+Only the latest release is supported with security patches:
+
+| Version | Supported |
+| --- | --- |
+| **1.1.x** | Yes ✅ |
+| **1.0.x** | No ❌ |
+
+---
+
+## Security Implementation
+
+### 1. Cryptographic Authentication & Password Hashing
+- User passwords are secure and hashed in the database using the **BCrypt** adaptive hashing algorithm.
+- Cost Factor parameter: `12` (provides strong resistance against brute-force attacks while preserving server performance).
+- Salt generation is handled internally by BCrypt during password creation.
+- Plaintext passwords are never logged, compared directly, or stored.
+- Salt comparisons during authentication use the secure `BCrypt.checkpw` constant-time matching function to prevent timing attacks.
 
 ### 2. Session Management
-- Successful authentication initializes an HTTP session via Java Servlets (`req.getSession(true)`).
-- Session variables (`userId`, `username`, `role`) are bound to the server context.
-- Sessions automatically timeout after **30 minutes** of inactivity (`session.setMaxInactiveInterval(30 * 60)`).
-- Logout invalidates the active HTTP session, clearing cookies and forcing redirection to the login portal.
+- Successful user authentication initializes an HTTP session via Java Servlets (`req.getSession(true)`).
+- Critical metadata attributes (`userId`, `username`, `role`) are stored server-side.
+- Inactive operator sessions automatically invalidate after **30 minutes** (configured via `session.setMaxInactiveInterval(30 * 60)`).
+- Session terminations (calling `/api/auth/logout`) explicitly invoke `session.invalidate()` to purge cookies and server-side contexts, redirecting the client immediately to the login interface.
 
-### 3. Parameterized SQL Queries
-- To prevent **SQL Injection (SQLi)** vulnerabilities, the DAO layers query database records strictly using `PreparedStatement` placeholders (`?`).
-- Parameter values are bound dynamically using type-specific setters (e.g. `ps.setInt`, `ps.setString`).
-- Raw string concatenation in SQL execution is strictly forbidden.
+### 3. SQL Injection (SQLi) Protection
+- Raw SQL string concatenation is forbidden.
+- The Data Access Object (DAO) tier queries PostgreSQL database tables using `PreparedStatement` parameters (`?`).
+- Variable bindings are set dynamically using strongly-typed APIs:
+  - `ps.setInt(...)`
+  - `ps.setString(...)`
+  - `ps.setDouble(...)`
+  - `ps.setTimestamp(...)`
+- Inputs are automatically escaped by PostgreSQL drivers during binding.
 
-### 4. Separation of Secrets
-- Database passwords and configurations are stored in `backend/src/main/resources/db.properties`.
-- This file is ignored by Git via the `.gitignore` rule `*.properties`.
-- A template template file (`db.properties.example`) is supplied instead to ensure database credentials are never committed to the public repository.
+### 4. Separation of Secrets & Environments
+- Database coordinates, credentials, and HikariCP pool parameters are isolated inside the local file:
+  `backend/src/main/resources/db.properties`.
+- This file is ignored by Git using the global pattern: `*.properties`.
+- The repository provides a template template `db.properties.example` for secure deployment.
 
-### 5. API Endpoint Authorization
-- The Java filter `AuthFilter.java` intercepting all `/api/*` requests verifies session validity before delegating requests.
-- Anonymous requests are rejected immediately with a `401 Unauthorized` response.
-- Exclusions are restricted to authentication endpoints (`/api/auth/login`, `/api/auth/session`) and CORS preflight OPTIONS queries.
+### 5. Input Validation
+- Servlets inspect request body JSON schemas before updating records.
+- Validation checks verify parameters:
+  - Asset IDs must be positive non-zero integers.
+  - Coordinate ranges must fall within valid lat/lng parameters: `-180.0 <= longitude <= 180.0` and `-90.0 <= latitude <= 90.0`.
+  - Empty or null values are rejected with standard HTTP status code `400 Bad Request`.
+
+---
+
+## Future Security Recommendations
+- **Transport Layer Security (TLS):** Enforce HTTPS on all connections using Tomcat SSL certificates to prevent man-in-the-middle sniffing of session IDs.
+- **Cross-Site Request Forgery (CSRF):** Integrate anti-CSRF token parameters on all state-modifying requests (POST/PUT/DELETE).
+- **Web Application Firewall (WAF):** Place the Tomcat instance behind a reverse proxy (e.g. Nginx or Cloudflare) configured to rate-limit coordinates ingestion endpoints.

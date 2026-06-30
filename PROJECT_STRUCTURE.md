@@ -7,15 +7,17 @@ This document outlines the directory structure of the Defence GIS Tracking Syste
 ```
 Defence-Asset-Tracking-Geofencing-System/
 ├── .gitignore              # Git ignored files configuration
+├── .github/                # GitHub workflows configuration
+│   └── workflows/
+│       └── build.yml       # Maven compilation build check
+│
 ├── CONTRIBUTING.md         # Contribution guidelines for developers
 ├── LICENSE                 # License file (MIT)
 ├── README.md               # Main repository readme
 ├── CHANGELOG.md            # Release log and changes list
 ├── PROJECT_STRUCTURE.md    # Folder structure guide (this file)
-├── API_DOCUMENTATION.md    # Rest API documentation
-├── DATABASE_DOCUMENTATION.md # Database schema and index details
-├── DEPLOYMENT.md           # Tomcat server deployment guide
 ├── INSTALLATION.md         # Installation instructions for prerequisites
+├── DEPLOYMENT.md           # Tomcat server deployment guide
 ├── TROUBLESHOOTING.md      # Troubleshooting guide for common issues
 ├── SECURITY.md             # Security review and best practices
 │
@@ -26,6 +28,20 @@ Defence-Asset-Tracking-Geofencing-System/
 │       ├── V003__bcrypt_passwords_and_seed_data.sql
 │       ├── V004__demo_data_expansion.sql
 │       └── V005__add_missing_geofence_fields.sql
+│
+├── docs/                   # System documentation files
+│   ├── ARCHITECTURE.md     # Architecture documentation (flows, layers, sequences)
+│   ├── API_DOCUMENTATION.md # REST API specifications and response shapes
+│   ├── DATABASE.md         # Database schema descriptions, indices, and triggers
+│   │
+│   ├── screenshots/        # Application interface image files placeholders
+│   │   └── README.md
+│   │
+│   ├── backend-roadmap.md  # Technical roadmap parameters
+│   ├── branch-strategy.md  # Commit branch flow guidelines
+│   ├── database_erd.png    # Database Entity Relationship Diagram
+│   ├── frontend-roadmap.md # Interface roadmap parameters
+│   └── task-allocation.md  # Task management sheet
 │
 ├── backend/                # Java Maven backend source project
 │   ├── pom.xml             # Maven dependencies configuration
@@ -69,13 +85,10 @@ Defence-Asset-Tracking-Geofencing-System/
 │       ├── tracks.sld      # SLD style for history path lines
 │       └── zones.sld       # SLD style for geofence polygons
 │
-├── scripts/                # Administrative utilities and simulators
-│   ├── README.md
-│   ├── gps_simulator.py    # Python simulator generating mock GPS updates
-│   ├── setup_database.ps1  # Automated database drop and re-seed script
-│   ├── setup_environment.bat # Setup diagnostics and status checker
-│   └── setup_geoserver.sh  # Script to copy files to GeoServer
-│
-└── test-cases/             # Automated test configuration sheets
-    └── README.md           # QA test outline
+└── scripts/                # Administrative utilities and simulators
+    ├── README.md
+    ├── gps_simulator.py    # Python simulator generating mock GPS updates
+    ├── setup_database.ps1  # Automated database drop and re-seed script
+    ├── setup_environment.bat # Setup diagnostics and status checker
+    └── setup_geoserver.sh  # Script to copy files to GeoServer
 ```

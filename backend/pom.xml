@@ -30,7 +30,6 @@
 
         <!-- Dependency Versions -->
         <servlet.version>4.0.1</servlet.version>
-        <jsp.version>2.3.3</jsp.version>
         <postgresql.version>42.7.3</postgresql.version>
         <hikaricp.version>5.1.0</hikaricp.version>
         <gson.version>2.11.0</gson.version>
@@ -49,14 +48,6 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>${servlet.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- JSP API (provided by Tomcat) -->
-        <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>javax.servlet.jsp-api</artifactId>
-            <version>${jsp.version}</version>
             <scope>provided</scope>
         </dependency>
 

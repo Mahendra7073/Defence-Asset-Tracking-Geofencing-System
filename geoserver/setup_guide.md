@@ -80,6 +80,15 @@ http://localhost:8080/geoserver/defence/wfs?service=WFS&version=2.0.0&request=Ge
 
 ---
 
-## Step 5: Apply SLD Styles (Pending)
+## Step 5: Apply SLD Styles
 
-SLD style files will be placed in `geoserver/styles/` once created.
+Apply the SLD style files from the `geoserver/styles/` directory:
+
+| Style File    | Target Layer      | Description                     |
+| ------------- | ----------------- | ------------------------------- |
+| `assets.sld`  | `asset_positions` | Point markers for assets        |
+| `tracks.sld`  | `track_history`   | Line styling for route history  |
+| `zones.sld`   | `geofence_zones`  | Polygon fill for geofence zones |
+
+To apply: navigate to **Styles → Add a new style**, upload the `.sld` file, and assign it to the corresponding layer under **Layers → Publishing → Default Style**.
+

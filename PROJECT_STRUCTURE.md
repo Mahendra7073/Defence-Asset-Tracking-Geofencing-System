@@ -7,11 +7,16 @@ This document outlines the directory structure of the Defence GIS Tracking Syste
 ```
 Defence-Asset-Tracking-Geofencing-System/
 ├── .gitignore              # Git ignored files configuration
-├── .github/                # GitHub workflows configuration
-│   └── workflows/
-│       └── build.yml       # Maven compilation build check
+├── .github/                # GitHub workflows and issue/PR templates
+│   ├── ISSUE_TEMPLATE/     # Templates for bug reports and feature requests
+│   │   ├── bug_report.md
+│   │   └── feature_request.md
+│   ├── workflows/
+│   │   └── build.yml       # Maven compilation build check
+│   └── pull_request_template.md # PR description template
 │
 ├── CONTRIBUTING.md         # Contribution guidelines for developers
+├── CODE_OF_CONDUCT.md     # Code of Conduct policy (Contributor Covenant)
 ├── LICENSE                 # License file (MIT)
 ├── README.md               # Main repository readme
 ├── CHANGELOG.md            # Release log and changes list
@@ -37,11 +42,7 @@ Defence-Asset-Tracking-Geofencing-System/
 │   ├── screenshots/        # Application interface image files placeholders
 │   │   └── README.md
 │   │
-│   ├── backend-roadmap.md  # Technical roadmap parameters
-│   ├── branch-strategy.md  # Commit branch flow guidelines
-│   ├── database_erd.png    # Database Entity Relationship Diagram
-│   ├── frontend-roadmap.md # Interface roadmap parameters
-│   └── task-allocation.md  # Task management sheet
+│   └── database_erd.png    # Database Entity Relationship Diagram
 │
 ├── backend/                # Java Maven backend source project
 │   ├── pom.xml             # Maven dependencies configuration
@@ -52,7 +53,9 @@ Defence-Asset-Tracking-Geofencing-System/
 │       │   │   ├── dao/         # Database Access Objects (DAOs) for SQL queries
 │       │   │   ├── filter/      # Authentication Servlet Filters
 │       │   │   ├── model/       # Data transfer objects and models
-│       │   │   └── servlet/     # REST Servlets handling HTTP endpoints
+│       │   │   ├── service/     # Business logic (GeofenceService breach detection)
+│       │   │   ├── servlet/     # REST Servlets handling HTTP endpoints
+│       │   │   └── util/        # Utilities (PasswordUtil BCrypt helper)
 │       │   ├── resources/
 │       │   │   ├── db.properties        # Active database credentials
 │       │   │   └── db.properties.example # Template connection file

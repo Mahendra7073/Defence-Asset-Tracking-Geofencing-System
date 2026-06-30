@@ -11,6 +11,8 @@ import java.util.List;
 
 public class UserDAO {
 
+    private static final Logger log = LoggerFactory.getLogger(UserDAO.class);
+
     public List<User> findAll() {
         String sql = "SELECT id, username, password_hash, full_name, role, email, is_active, last_login, created_at "
                    + "FROM users ORDER BY id";
@@ -24,9 +26,6 @@ public class UserDAO {
         }
         return users;
     }
-
-
-    private static final Logger log = LoggerFactory.getLogger(UserDAO.class);
 
     public User findByUsername(String username) {
         String sql = "SELECT id, username, password_hash, full_name, role, email, is_active, last_login, created_at "
@@ -42,8 +41,6 @@ public class UserDAO {
         }
         return null;
     }
-
-
 
     public boolean updateLastLogin(int userId) {
         String sql = "UPDATE users SET last_login = NOW() WHERE id = ?";
@@ -71,3 +68,4 @@ public class UserDAO {
         return u;
     }
 }
+

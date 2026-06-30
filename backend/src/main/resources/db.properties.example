@@ -1,0 +1,13 @@
+# Database Connection Properties
+# Copy this file to db.properties and fill in your values.
+
+db.url=jdbc:postgresql://localhost:5432/defence_gis
+db.username=postgres
+db.password=YOUR_PASSWORD_HERE
+db.driver=org.postgresql.Driver
+
+# HikariCP Pool Settings
+db.pool.maxSize=10
+db.pool.minIdle=2
+db.pool.connectionTimeout=30000
+db.pool.idleTimeout=600000

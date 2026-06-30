@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Defence GIS</title>
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="logo-icon">🛡️</div>
+                    <div class="logo-text">Defence GIS<span>Tracking System</span></div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main</div>
+                <a href="dashboard.html" class="nav-item active" id="nav-dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+                <a href="tracking.html" class="nav-item" id="nav-tracking"><span class="nav-icon">🗺️</span> Live Tracking</a>
+                <a href="geofence.html" class="nav-item" id="nav-geofence"><span class="nav-icon">📍</span> Geofence Zones</a>
+                <a href="alerts.html" class="nav-item" id="nav-alerts"><span class="nav-icon">🔔</span> Alerts <span class="nav-badge" id="alert-count">0</span></a>
+                <div class="nav-section-label">Management</div>
+                <a href="assets.html" class="nav-item" id="nav-assets"><span class="nav-icon">🚁</span> Assets</a>
+                <a href="routes.html" class="nav-item" id="nav-routes"><span class="nav-icon">🛤️</span> Route History</a>
+                <a href="reports.html" class="nav-item" id="nav-reports"><span class="nav-icon">📋</span> Reports</a>
+                <a href="users.html" class="nav-item" id="nav-users"><span class="nav-icon">👤</span> Users</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-display-name">Admin</div>
+                        <div class="user-role" id="user-display-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <button class="header-icon-btn" id="sidebar-toggle">☰</button>
+                    <h2 class="header-title">Dashboard</h2>
+                    <span class="header-breadcrumb">/ Command Centre</span>
+                </div>
+                <div class="header-right">
+                    <span class="header-clock" id="header-clock"></span>
+                    <button class="btn btn-secondary btn-sm" id="btn-logout">Logout</button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- KPI Stat Cards -->
+                <section class="grid-4" style="margin-bottom:var(--space-xl);">
+                    <div class="stat-card">
+                        <div class="stat-icon icon-blue">🚛</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Assets</div>
+                            <div class="stat-value" id="stat-total-assets">--</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon icon-green">✅</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Active Assets</div>
+                            <div class="stat-value" id="stat-active-assets">--</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon icon-orange">📍</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Geofence Zones</div>
+                            <div class="stat-value" id="stat-zones">--</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon icon-red">⚠️</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Active Alerts</div>
+                            <div class="stat-value" id="stat-alerts">--</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Map + Recent Alerts -->
+                <section class="grid-2">
+                    <div class="card" style="padding:0;overflow:hidden;">
+                        <div id="dashboard-map" style="height:450px;border-radius:var(--radius-lg);"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Alerts</h3>
+                        </div>
+                        <div id="recent-alerts-container">
+                            <div class="empty-state">
+                                <div class="empty-icon">🔔</div>
+                                <div class="empty-title">Loading alerts...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../assets/js/map.js"></script>
+    <script>
+    (function() {
+        var API_BASE = '/DefenceGIS/api';
+
+        // Session check
+        fetch(API_BASE + '/auth/session', { credentials: 'same-origin' })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.status !== 'success') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                var u = data.data;
+                document.getElementById('user-display-name').textContent = u.username || 'Admin';
+                document.getElementById('user-display-role').textContent = u.role || 'operator';
+                document.getElementById('user-avatar').textContent = (u.username || 'A').charAt(0).toUpperCase();
+            })
+            .catch(function() { window.location.href = 'login.html'; });
+
+        // Logout
+        document.getElementById('btn-logout').addEventListener('click', function() {
+            fetch(API_BASE + '/auth/logout', { method: 'POST', credentials: 'same-origin' })
+                .finally(function() { window.location.href = 'login.html'; });
+        });
+
+        // Clock
+        function updateClock() {
+            document.getElementById('header-clock').textContent =
+                new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Sidebar toggle
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+
+        // Load dashboard stats
+        function loadStats() {
+            fetch(API_BASE + '/dashboard', { credentials: 'same-origin' })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    if (res.status === 'success') {
+                        document.getElementById('stat-total-assets').textContent = res.data.totalAssets || 0;
+                        document.getElementById('stat-active-assets').textContent = res.data.activeAssets || 0;
+                        document.getElementById('stat-zones').textContent = res.data.totalZones || 0;
+                        document.getElementById('stat-alerts').textContent = res.data.unacknowledgedAlerts || 0;
+                        var badge = document.getElementById('alert-count');
+                        if (badge) badge.textContent = res.data.unacknowledgedAlerts || 0;
+                    }
+                });
+        }
+
+        // Load recent alerts
+        function loadRecentAlerts() {
+            fetch(API_BASE + '/alerts?limit=10', { credentials: 'same-origin' })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    var container = document.getElementById('recent-alerts-container');
+                    if (res.status === 'success' && res.data && res.data.length > 0) {
+                        var html = '<table class="data-table"><thead><tr><th>Time</th><th>Asset</th><th>Type</th><th>Severity</th></tr></thead><tbody>';
+                        res.data.forEach(function(a) {
+                            var sevClass = a.severity === 'HIGH' || a.severity === 'CRITICAL' ? 'danger' : 'warning';
+                            html += '<tr><td>' + new Date(a.triggeredAt).toLocaleString('en-IN') + '</td>';
+                            html += '<td>' + (a.assetName || 'Asset-' + a.assetId) + '</td>';
+                            html += '<td><span class="badge badge-danger">' + a.alertType + '</span></td>';
+                            html += '<td><span class="badge badge-' + sevClass + '">' + a.severity + '</span></td></tr>';
+                        });
+                        html += '</tbody></table>';
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No alerts</div><div class="empty-text">All clear — no active alerts.</div></div>';
+                    }
+                })
+                .catch(function() {
+                    document.getElementById('recent-alerts-container').innerHTML =
+                        '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Cannot load alerts</div></div>';
+                });
+        }
+
+        // Init map
+        document.addEventListener('DOMContentLoaded', function() {
+            MapController.init('dashboard-map');
+            MapController.loadAssetMarkers();
+            MapController.loadGeofenceZones();
+            MapController.startAutoRefresh(15000);
+            loadStats();
+            loadRecentAlerts();
+            setInterval(loadStats, 30000);
+            setInterval(loadRecentAlerts, 30000);
+        });
+    })();
+    </script>
+</body>
+</html>

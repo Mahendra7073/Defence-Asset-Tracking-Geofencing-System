@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Route History — Defence GIS Tracking System">
+    <title>Route History — Defence GIS</title>
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="sidebar-logo"><div class="logo-icon">🛡️</div><div class="logo-text">Defence GIS<span>Tracking System</span></div></div></div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main</div>
+                <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+                <a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a>
+                <a href="geofence.html" class="nav-item"><span class="nav-icon">📍</span> Geofence Zones</a>
+                <a href="alerts.html" class="nav-item"><span class="nav-icon">🔔</span> Alerts</a>
+                <div class="nav-section-label">Management</div>
+                <a href="assets.html" class="nav-item"><span class="nav-icon">🚁</span> Assets</a>
+                <a href="routes.html" class="nav-item active"><span class="nav-icon">🛤️</span> Route History</a>
+                <a href="reports.html" class="nav-item"><span class="nav-icon">📋</span> Reports</a>
+                <a href="users.html" class="nav-item"><span class="nav-icon">👤</span> Users</a>
+            </nav>
+            <div class="sidebar-footer"><div class="sidebar-user"><div class="user-avatar" id="user-avatar">A</div><div class="user-info"><div class="user-name" id="user-display-name">Admin</div><div class="user-role" id="user-display-role">Administrator</div></div></div></div>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left"><button class="header-icon-btn" id="sidebar-toggle">☰</button><h2 class="header-title">Route History</h2><span class="header-breadcrumb">/ Track Playback</span></div>
+                <div class="header-right"><button class="btn btn-secondary btn-sm" id="btn-logout">Logout</button></div>
+            </header>
+            <div class="page-content">
+                <div class="card" style="margin-bottom:var(--space-lg);">
+                    <div class="card-header" style="display:flex;gap:var(--space-md);align-items:center;flex-wrap:wrap;">
+                        <select class="form-select" id="route-asset-select" style="width:200px;"><option value="">Select Asset</option></select>
+                        <input type="date" class="form-input" id="route-date-start" style="width:160px;">
+                        <input type="date" class="form-input" id="route-date-end" style="width:160px;">
+                        <button class="btn btn-primary btn-sm" id="btn-load-route">Load Route</button>
+                        <button class="btn btn-secondary btn-sm" id="btn-play-route">▶ Play</button>
+                        <button class="btn btn-secondary btn-sm" id="btn-pause-route">⏸ Pause</button>
+                        <button class="btn btn-secondary btn-sm" id="btn-reset-route">⏹ Reset</button>
+                    </div>
+                </div>
+                <section class="grid-2">
+                    <div class="card" style="padding:0;overflow:hidden;">
+                        <div id="route-map" style="height:500px;"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Track Details</h3></div>
+                        <div style="padding:var(--space-lg);">
+                            <div class="stat-card" style="margin-bottom:var(--space-md);"><div class="stat-info"><div class="stat-label">Distance</div><div class="stat-value" id="route-distance">—</div></div></div>
+                            <div class="stat-card" style="margin-bottom:var(--space-md);"><div class="stat-info"><div class="stat-label">Avg Speed</div><div class="stat-value" id="route-speed">—</div></div></div>
+                            <div class="stat-card" style="margin-bottom:var(--space-md);"><div class="stat-info"><div class="stat-label">Duration</div><div class="stat-value" id="route-duration">—</div></div></div>
+                            <div class="stat-card"><div class="stat-info"><div class="stat-label">GPS Points</div><div class="stat-value" id="route-points">—</div></div></div>
+                        </div>
+                        <div style="padding:0 var(--space-lg) var(--space-lg);">
+                            <input type="range" id="route-slider" min="0" max="100" value="0" style="width:100%;">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/map.js"></script>
+    <script src="../assets/js/tracking.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script>Auth.checkSession(); Auth.initLogoutButton();</script>
+</body>
+</html>

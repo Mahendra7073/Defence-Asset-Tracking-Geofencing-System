@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Tracking — Defence GIS</title>
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="sidebar-logo"><div class="logo-icon">🛡️</div><div class="logo-text">Defence GIS<span>Tracking System</span></div></div></div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main</div>
+                <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+                <a href="tracking.html" class="nav-item active"><span class="nav-icon">🗺️</span> Live Tracking</a>
+                <a href="geofence.html" class="nav-item"><span class="nav-icon">📍</span> Geofence Zones</a>
+                <a href="alerts.html" class="nav-item"><span class="nav-icon">🔔</span> Alerts</a>
+                <div class="nav-section-label">Management</div>
+                <a href="assets.html" class="nav-item"><span class="nav-icon">🚁</span> Assets</a>
+                <a href="routes.html" class="nav-item"><span class="nav-icon">🛤️</span> Route History</a>
+                <a href="reports.html" class="nav-item"><span class="nav-icon">📋</span> Reports</a>
+                <a href="users.html" class="nav-item"><span class="nav-icon">👤</span> Users</a>
+            </nav>
+            <div class="sidebar-footer"><div class="sidebar-user"><div class="user-avatar">A</div><div class="user-info"><div class="user-name">Admin</div><div class="user-role">Administrator</div></div></div></div>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <button class="header-icon-btn" id="sidebar-toggle">☰</button>
+                    <h2 class="header-title">Live Tracking</h2>
+                    <span class="header-breadcrumb">/ Real-time Map</span>
+                </div>
+                <div class="header-right">
+                    <label style="color:var(--color-text-muted);font-size:var(--font-size-sm);">
+                        <input type="checkbox" id="toggle-zones" checked> Show Zones
+                    </label>
+                    <label style="color:var(--color-text-muted);font-size:var(--font-size-sm);margin-left:var(--space-md);">
+                        <input type="checkbox" id="toggle-wms"> WMS Overlay
+                    </label>
+                    <span class="header-clock" id="header-clock"></span>
+                </div>
+            </header>
+            <div class="page-content" style="padding:0;">
+                <div id="tracking-map" style="height:calc(100vh - 70px);width:100%;"></div>
+            </div>
+        </main>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../assets/js/map.js"></script>
+    <script>
+    (function() {
+        // Sidebar toggle
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            setTimeout(function() { if (MapController.map) MapController.map.invalidateSize(); }, 300);
+        });
+
+        // Clock
+        function tick() {
+            document.getElementById('header-clock').textContent =
+                new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
+        }
+        tick(); setInterval(tick, 1000);
+
+        // Init map
+        document.addEventListener('DOMContentLoaded', function() {
+            MapController.init('tracking-map');
+            MapController.loadAssetMarkers();
+            MapController.loadGeofenceZones();
+            MapController.startAutoRefresh(10000);
+
+            // Toggle zones
+            document.getElementById('toggle-zones').addEventListener('change', function() {
+                if (this.checked) {
+                    MapController.loadGeofenceZones();
+                    MapController.map.addLayer(MapController.zoneLayer);
+                } else {
+                    MapController.map.removeLayer(MapController.zoneLayer);
+                }
+            });
+
+            // Toggle WMS
+            document.getElementById('toggle-wms').addEventListener('change', function() {
+                if (this.checked) {
+                    MapController.addWmsLayer();
+                } else if (MapController.wmsLayer) {
+                    MapController.map.removeLayer(MapController.wmsLayer);
+                    MapController.wmsLayer = null;
+                }
+            });
+        });
+    })();
+    </script>
+</body>
+</html>

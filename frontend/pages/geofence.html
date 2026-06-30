@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Geofence Zones — Defence GIS Tracking System">
+    <title>Geofence Zones — Defence GIS</title>
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* Dark theme Leaflet Popups */
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: var(--color-card) !important;
+            color: var(--color-text-primary) !important;
+            border: 1px solid var(--color-card-border) !important;
+            box-shadow: var(--shadow-lg) !important;
+            border-radius: var(--radius-md) !important;
+        }
+        .leaflet-popup-close-button {
+            color: var(--color-text-secondary) !important;
+        }
+        .leaflet-popup-close-button:hover {
+            color: var(--color-accent) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="sidebar-logo"><div class="logo-icon">🛡️</div><div class="logo-text">Defence GIS<span>Tracking System</span></div></div></div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main</div>
+                <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+                <a href="tracking.html" class="nav-item"><span class="nav-icon">🗺️</span> Live Tracking</a>
+                <a href="geofence.html" class="nav-item active"><span class="nav-icon">📍</span> Geofence Zones</a>
+                <a href="alerts.html" class="nav-item"><span class="nav-icon">🔔</span> Alerts</a>
+                <div class="nav-section-label">Management</div>
+                <a href="assets.html" class="nav-item"><span class="nav-icon">🚁</span> Assets</a>
+                <a href="routes.html" class="nav-item"><span class="nav-icon">🛤️</span> Route History</a>
+                <a href="reports.html" class="nav-item"><span class="nav-icon">📋</span> Reports</a>
+                <a href="users.html" class="nav-item"><span class="nav-icon">👤</span> Users</a>
+            </nav>
+            <div class="sidebar-footer"><div class="sidebar-user"><div class="user-avatar" id="user-avatar">A</div><div class="user-info"><div class="user-name" id="user-display-name">Admin</div><div class="user-role" id="user-display-role">Administrator</div></div></div></div>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left"><button class="header-icon-btn" id="sidebar-toggle">☰</button><h2 class="header-title">Geofence Zones</h2><span class="header-breadcrumb">/ Zone Management</span></div>
+                <div class="header-right"><button class="btn btn-secondary btn-sm" id="btn-logout">Logout</button></div>
+            </header>
+            <div class="page-content">
+                <section class="grid-2">
+                    <div class="card" style="padding:0;overflow:hidden;">
+                        <div id="geofence-map" style="height:600px;"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Defined Zones</h3></div>
+                        <table class="data-table" id="zone-table">
+                            <thead><tr><th>Zone Name</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="zone-table-body">
+                                <tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📍</div><div class="empty-title">Loading zones...</div></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/map.js"></script>
+    <script src="../assets/js/geofence.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script>Auth.checkSession(); Auth.initLogoutButton();</script>
+</body>
+</html>

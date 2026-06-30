@@ -1,0 +1,90 @@
+/* ============================================
+   Defence GIS Tracking System
+   CSS Design System — Variables & Tokens
+   ============================================ */
+
+:root {
+    /* ---------- Color Palette ---------- */
+    --color-primary:        #0a1628;
+    --color-primary-light:  #132240;
+    --color-primary-dark:   #060f1d;
+    --color-accent:         #00d4ff;
+    --color-accent-dim:     #0098b8;
+    --color-accent-glow:    rgba(0, 212, 255, 0.15);
+
+    --color-success:        #00e676;
+    --color-warning:        #ffab40;
+    --color-danger:         #ff5252;
+    --color-info:           #448aff;
+
+    --color-surface:        #0f1e36;
+    --color-surface-hover:  #162a4a;
+    --color-card:           #132240;
+    --color-card-border:    rgba(0, 212, 255, 0.12);
+
+    --color-text-primary:   #e8edf5;
+    --color-text-secondary: #8899b4;
+    --color-text-muted:     #556883;
+
+    /* ---------- Typography ---------- */
+    --font-family:          'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-mono:            'JetBrains Mono', 'Fira Code', monospace;
+
+    --font-size-xs:         0.75rem;
+    --font-size-sm:         0.8125rem;
+    --font-size-base:       0.875rem;
+    --font-size-md:         1rem;
+    --font-size-lg:         1.125rem;
+    --font-size-xl:         1.375rem;
+    --font-size-2xl:        1.75rem;
+    --font-size-3xl:        2.25rem;
+
+    --font-weight-normal:   400;
+    --font-weight-medium:   500;
+    --font-weight-semibold: 600;
+    --font-weight-bold:     700;
+
+    --line-height-tight:    1.25;
+    --line-height-normal:   1.5;
+    --line-height-relaxed:  1.75;
+
+    /* ---------- Spacing ---------- */
+    --space-xs:   0.25rem;
+    --space-sm:   0.5rem;
+    --space-md:   1rem;
+    --space-lg:   1.5rem;
+    --space-xl:   2rem;
+    --space-2xl:  3rem;
+
+    /* ---------- Border Radius ---------- */
+    --radius-sm:  4px;
+    --radius-md:  8px;
+    --radius-lg:  12px;
+    --radius-xl:  16px;
+    --radius-full: 9999px;
+
+    /* ---------- Shadows ---------- */
+    --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md:    0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg:    0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-glow:  0 0 20px rgba(0, 212, 255, 0.15);
+
+    /* ---------- Transitions ---------- */
+    --transition-fast:   150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow:   400ms ease;
+
+    /* ---------- Layout ---------- */
+    --sidebar-width:          260px;
+    --sidebar-collapsed:      64px;
+    --header-height:          60px;
+    --content-max-width:      1400px;
+
+    /* ---------- Z-Index Stack ---------- */
+    --z-base:     1;
+    --z-dropdown: 100;
+    --z-sticky:   200;
+    --z-overlay:  300;
+    --z-modal:    400;
+    --z-toast:    500;
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Defence Asset Tracking and Geofencing System — DRDO GIS Platform">
+    <title>Defence GIS — Asset Tracking & Geofencing</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        /* Index-specific: redirect logic or landing overview */
+        .landing-hero {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+        .landing-hero h1 {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            background: linear-gradient(135deg, var(--color-accent), var(--color-info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .landing-hero p {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-lg);
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landing-hero">
+        <div>
+            <div style="font-size: 3rem; margin-bottom: var(--space-md);">🛡️</div>
+            <h1>Defence GIS Tracking System</h1>
+            <p>Real-time asset tracking, geofencing, and alert monitoring for defence operations.</p>
+        </div>
+        <a href="pages/login.html" class="btn btn-primary" id="btn-enter-system">
+            Enter System →
+        </a>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

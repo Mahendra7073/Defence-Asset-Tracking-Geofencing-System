@@ -1,0 +1,81 @@
+# Project Structure
+
+This document outlines the directory structure of the Defence GIS Tracking System repository.
+
+## Directory Layout
+
+```
+Defence-Asset-Tracking-Geofencing-System/
+├── .gitignore              # Git ignored files configuration
+├── CONTRIBUTING.md         # Contribution guidelines for developers
+├── LICENSE                 # License file (MIT)
+├── README.md               # Main repository readme
+├── CHANGELOG.md            # Release log and changes list
+├── PROJECT_STRUCTURE.md    # Folder structure guide (this file)
+├── API_DOCUMENTATION.md    # Rest API documentation
+├── DATABASE_DOCUMENTATION.md # Database schema and index details
+├── DEPLOYMENT.md           # Tomcat server deployment guide
+├── INSTALLATION.md         # Installation instructions for prerequisites
+├── TROUBLESHOOTING.md      # Troubleshooting guide for common issues
+├── SECURITY.md             # Security review and best practices
+│
+├── database/               # PostgreSQL database schema and migrations
+│   ├── defence_gis.sql     # Base database schema seed script
+│   └── migrations/         # Flyway-compliant SQL migration scripts
+│       ├── V002__schema_fixes_and_geofencing.sql
+│       ├── V003__bcrypt_passwords_and_seed_data.sql
+│       ├── V004__demo_data_expansion.sql
+│       └── V005__add_missing_geofence_fields.sql
+│
+├── backend/                # Java Maven backend source project
+│   ├── pom.xml             # Maven dependencies configuration
+│   └── src/
+│       ├── main/
+│       │   ├── java/com/drdo/gis/
+│       │   │   ├── config/      # HikariCP and database configuration
+│       │   │   ├── dao/         # Database Access Objects (DAOs) for SQL queries
+│       │   │   ├── filter/      # Authentication Servlet Filters
+│       │   │   ├── model/       # Data transfer objects and models
+│       │   │   └── servlet/     # REST Servlets handling HTTP endpoints
+│       │   ├── resources/
+│       │   │   ├── db.properties        # Active database credentials
+│       │   │   └── db.properties.example # Template connection file
+│       │   └── webapp/WEB-INF/
+│       │       └── web.xml      # Servlet mappings and session configs
+│       └── test/                # Unit test classes
+│
+├── frontend/               # Single Page Application (SPA) frontend static assets
+│   ├── index.html          # Redirect controller
+│   ├── assets/
+│   │   ├── css/            # UI stylesheet modules (variables, layout, components)
+│   │   ├── images/         # Static images and Leaflet map markers
+│   │   └── js/             # Frontend application logic controllers
+│   └── pages/              # HTML content pages
+│       ├── alerts.html     # Real-time and historic warnings list
+│       ├── assets.html     # Defence fleet log and management
+│       ├── dashboard.html  # Stats counters and KPI panels
+│       ├── geofence.html   # Geofence zones visual map with view action
+│       ├── login.html      # Secure sign-in page
+│       ├── reports.html    # Custom alert and tracking logs queries
+│       ├── routes.html     # Route history player and WKT loader
+│       ├── tracking.html   # Live tracking screen with maps and layers
+│       └── users.html      # Active team members table
+│
+├── geoserver/              # Geoserver SLD maps styling definitions
+│   ├── README.md
+│   ├── setup_guide.md
+│   └── styles/
+│       ├── assets.sld      # SLD style for asset points
+│       ├── tracks.sld      # SLD style for history path lines
+│       └── zones.sld       # SLD style for geofence polygons
+│
+├── scripts/                # Administrative utilities and simulators
+│   ├── README.md
+│   ├── gps_simulator.py    # Python simulator generating mock GPS updates
+│   ├── setup_database.ps1  # Automated database drop and re-seed script
+│   ├── setup_environment.bat # Setup diagnostics and status checker
+│   └── setup_geoserver.sh  # Script to copy files to GeoServer
+│
+└── test-cases/             # Automated test configuration sheets
+    └── README.md           # QA test outline
+```

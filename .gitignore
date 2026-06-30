@@ -1,0 +1,51 @@
+# ===========================
+# Defence GIS Tracking System
+# .gitignore
+# ===========================
+
+# ----- Java / Maven -----
+backend/target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+hs_err_pid*
+
+# ----- IDE -----
+.idea/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.vscode/
+*.swp
+*.swo
+*~
+.factorypath
+
+# ----- OS -----
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ----- Environment / Secrets -----
+*.env
+*.properties
+!src/main/resources/db.properties.example
+
+# ----- Node (if added later) -----
+node_modules/
+package-lock.json
+
+# ----- GeoServer Data Directory -----
+geoserver/data_dir/
+
+# ----- Misc -----
+*.bak
+*.tmp
+*.temp
+logs/

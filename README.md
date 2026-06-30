@@ -197,5 +197,13 @@ This project was developed as part of the DRDO Internship Program by a collabora
 **Shri Shyam Lal**
 
 
-## 💖 Acknowledgements
-Special thanks to the open-source GIS community, the creators of Leaflet.js, and the DRDO mentorship program team.
+## Acknowledgements
+
+This project was successfully completed as part of the **DRDO Internship Program**.
+
+We sincerely thank the **Defence Research and Development Organisation (DRDO)** for providing this valuable learning opportunity and an environment to work on real-world GIS-based defence applications.
+
+Our heartfelt appreciation goes to our **Internship Mentor, Shri Shyam Lal**, whose guidance, encouragement, and technical insights were instrumental throughout the project.
+
+We also acknowledge the maintainers and contributors of the open-source technologies that made this project possible, including **Java**, **Leaflet.js**, **PostgreSQL**, **PostGIS**, **GeoServer**, **Apache Tomcat**, and **Maven**.
+

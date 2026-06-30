@@ -39,8 +39,7 @@ Defence-Asset-Tracking-Geofencing-System/
 │   ├── API_DOCUMENTATION.md # REST API specifications and response shapes
 │   ├── DATABASE.md         # Database schema descriptions, indices, and triggers
 │   │
-│   ├── screenshots/        # Application interface image files placeholders
-│   │   └── README.md
+│   ├── images/             # High-quality application interface screenshots
 │   │
 │   └── database_erd.png    # Database Entity Relationship Diagram
 │

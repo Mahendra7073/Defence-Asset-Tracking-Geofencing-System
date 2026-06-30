@@ -48,18 +48,44 @@ The Defence GIS Tracking System provides military command centers with spatial i
 ---
 
 ## 🖼️ Application Interfaces (Screenshots)
-Place the visual screenshots inside the [docs/screenshots/](docs/screenshots/) directory to render them:
 
-* **Login Page:** `/docs/screenshots/login.png` — Credential portal input cards.
-* **Dashboard View:** `/docs/screenshots/dashboard.png` — Operational KPIs and alert summary metrics.
-* **Assets Registry:** `/docs/screenshots/assets.png` — Fleet logs and hardware categorization list.
-* **Live GIS Tracking:** `/docs/screenshots/tracking.png` — Live map screen showing current hardware coordinates.
-* **Geofence Editor:** `/docs/screenshots/geofence.png` — Polygon boundaries highlighting and statistics popup.
-* **Breach Alerts:** `/docs/screenshots/alerts.png` — Detailed unacknowledged alert triggers list.
-* **Route Historial Player:** `/docs/screenshots/routes.png` — Path player overlay showing traveling logs.
-* **Officers Accounts:** `/docs/screenshots/users.png` — System administrator user table list.
+Below are the actual interface screenshots captured from the running system:
 
-*(See [screenshots guide](docs/screenshots/README.md) for size details.)*
+### 1. Landing Page
+![Landing Page](docs/images/landing.png)
+
+### 2. Secure Login Portal
+![Login Portal](docs/images/login.png)
+
+### 3. Operational Metrics Dashboard
+![Dashboard](docs/images/dashboard.png)
+
+### 4. Real-Time Telemetry Map
+![Live Tracking Map](docs/images/tracking.png)
+
+### 5. Perimeter Geofence Zones Map
+![Geofence Zones Map](docs/images/geofence.png)
+
+### 6. Geofence Zone Metrics (Breach Inspection)
+![Geofence Zone Details](docs/images/geofence_details.png)
+
+### 7. Core Assets Registry
+![Assets Registry Table](docs/images/assets.png)
+
+### 8. Real-Time Breach Alerts Feeds
+![Alarms Feed Table](docs/images/alerts.png)
+
+### 9. Custom Query Reports Generator
+![Reports Generator Table](docs/images/reports.png)
+
+### 10. System Administrator Accounts Manager
+![Users Administration Table](docs/images/users.png)
+
+### 11. Historical Route Replay Player
+![Historical Path Replay](docs/images/routes.png)
+
+### 12. Mobile Responsive Dashboard Emulation
+![Mobile Responsive Layout](docs/images/mobile.png)
 
 ---
 

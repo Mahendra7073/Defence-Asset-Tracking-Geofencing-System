@@ -49,3 +49,7 @@ geoserver/data_dir/
 *.tmp
 *.temp
 logs/
+
+# ----- Temporary / Local Wiki Draft -----
+temp_wiki/
+

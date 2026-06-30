@@ -87,7 +87,7 @@ CREATE INDEX idx_track_geom          ON track_history USING GIST(path);
 
 -- test data
 INSERT INTO users (username, password_hash, full_name, role, email)
-VALUES ('raj', '1234_hash', 'System Admin', 'admin', 'admin@defence.gis');
+VALUES ('admin', '$2a$12$Uv73dagSOPfPB.Uu1kvpWexApfBcfyeLVK1/bd9HQUZhunccEIjuG', 'System Administrator', 'admin', 'admin@defence.gis');
 
 INSERT INTO assets (asset_name, asset_type, asset_code, status) VALUES
     ('Vehicle-01',   'vehicle', 'VH-001', 'active'),

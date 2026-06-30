@@ -1,222 +1,141 @@
-# Database Module - Defence GIS Tracking System
+# Defence GIS Tracking System
 
-## Overview
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
+[![Java Version](https://img.shields.io/badge/JDK-17-blue.svg)](https://adoptium.net/temurin/releases/?version=17)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-blue.svg)](https://www.postgresql.org/)
+[![PostGIS](https://img.shields.io/badge/PostGIS-3%2B-green.svg)](https://postgis.net/)
+[![Tomcat](https://img.shields.io/badge/Tomcat-9.0-orange.svg)](https://tomcat.apache.org/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-This repository contains the PostgreSQL + PostGIS database schema for the Defence GIS Tracking and Geofencing System.
-
-The database is designed to store and manage:
-
-* Defence Assets
-* GPS Positions
-* Geofence Zones
-* Alerts
-* Route History
-* System Users
+A production-grade, real-time spatial asset monitoring, alert generation, and geofencing management application designed for defence sector logistics and perimeter security. Built with PostgreSQL + PostGIS, Java Servlets, Apache Tomcat, and Leaflet.js maps.
 
 ---
 
-## Technologies Used
+## Architecture Overview
 
-* PostgreSQL 18
-* PostGIS 3.6
-
----
-
-## Database Setup
-
-### Step 1: Create Database
-
-```sql
-CREATE DATABASE defence_gis;
+```mermaid
+graph TD
+    Client[Web Browser / Leaflet Maps] <-->|HTTP JSON APIs| Servlet[Java Web Servlet Layer]
+    Servlet <-->|SQL Queries| DAO[Database Access Objects]
+    DAO <-->|Connection Pool| HikariCP[HikariCP Connection Pool]
+    HikariCP <-->|PostGIS Queries| DB[(PostgreSQL + PostGIS Database)]
+    DB -->|ST_Contains Triggers| AlertService[Alert Generation Trigger]
 ```
 
-### Step 2: Connect to Database
+The system separates concerns across three tiers:
+1. **Frontend (GIS Mapping Client):** Single Page Application using Leaflet for interactive rendering, custom layer overlays, historical route playback, and animated geofence visualisations.
+2. **Backend (API Service Layer):** Java Web application serving REST endpoints, managing secure user sessions, and processing coordinate telemetry.
+3. **Database (Spatial Engine):** PostgreSQL instance running PostGIS extensions. Handles spatial computations (polygon area, containment checks, route length calculation) directly in SQL.
 
-Open pgAdmin and connect to:
+---
 
-```text
-defence_gis
+## Features
+
+- **Live Fleet Tracking:** Real-time updates of military vehicles, personnel, and drones on an OpenStreetMap interface.
+- **Dynamic Geofencing:** Safe, warning, and restricted polygon creation with instant boundary breach alert generation.
+- **Animated Map Highlights:** Fades unselected zones and pulses boundaries of active geofences during inspection.
+- **Historical Route Playback:** Displays breadcrumb paths and calculates traveled distance and average speeds.
+- **KPI Dashboards:** High-level charts, unacknowledged warning counters, and active asset statistics.
+- **User management:** Multi-user logins with ADMIN credentials and security authorization filters.
+
+---
+
+## Technology Stack
+
+| Component | Technology | Description |
+| --- | --- | --- |
+| **Frontend** | HTML5, Vanilla CSS, Vanilla JS | Sleek dark theme UI client with zero heavy framework bloat. |
+| **Mapping Engine** | Leaflet.js | Open-source interactive map framework. |
+| **Backend** | Java 17, Java Servlets, Maven | Core endpoint controllers. |
+| **Connection Pool**| HikariCP | High-performance JDBC connection management. |
+| **Serialization** | Google Gson | Fast JSON parsing and output. |
+| **Authentication** | BCrypt | Standard salted password hashing. |
+| **Database** | PostgreSQL 15+ & PostGIS 3+ | Relational data and spatial mapping functions. |
+
+---
+
+## Installation & Setup
+
+For full installation guidelines, see the detailed [INSTALLATION.md](INSTALLATION.md).
+
+### 1. Database Initialization
+```bash
+# Connect to PostgreSQL and execute the base schema seed script
+psql -U postgres -f database/defence_gis.sql
+
+# Run migration files sequentially
+psql -U postgres -d defence_gis -f database/migrations/V002__schema_fixes_and_geofencing.sql
+psql -U postgres -d defence_gis -f database/migrations/V003__bcrypt_passwords_and_seed_data.sql
+psql -U postgres -d defence_gis -f database/migrations/V004__demo_data_expansion.sql
+psql -U postgres -d defence_gis -f database/migrations/V005__add_missing_geofence_fields.sql
 ```
 
-### Step 3: Enable PostGIS
-
-```sql
-CREATE EXTENSION IF NOT EXISTS postgis;
+### 2. Configure Database Credentials
+Create `backend/src/main/resources/db.properties` from template:
+```properties
+db.url=jdbc:postgresql://localhost:5432/defence_gis
+db.username=postgres
+db.password=YOUR_LOCAL_PASSWORD
 ```
 
-Verify installation:
+### 3. Build & Run
+```bash
+# Compile and create the deployable WAR package
+cd backend
+mvn clean package
 
-```sql
-SELECT PostGIS_Version();
+# Deploy to Tomcat by copying the target WAR to Tomcat webapps folder
+copy target\DefenceGIS.war %CATALINA_HOME%\webapps\
 ```
 
-### Step 4: Execute SQL Script
-
-Run:
-
-```text
-database/defence_gis.sql
-```
-
-This script automatically creates all required tables, indexes, and test data.
+Access the sign-in screen at:
+`http://localhost:8080/DefenceGIS/pages/login.html`
 
 ---
 
-## Database Tables
+## Default Credentials
 
-### users
+The following accounts are pre-seeded in the database:
 
-Stores application users and administrators.
-
-| Column        | Description               |
-| ------------- | ------------------------- |
-| id            | User ID                   |
-| username      | Login username            |
-| password_hash | Encrypted password        |
-| role          | Admin / Operator / Viewer |
+| Username | Password | Role | Description |
+| --- | --- | --- | --- |
+| **drdo** | `drdo2026` | ADMIN | Primary Administrator |
+| **admin** | `admin123` | ADMIN | System Administrator |
+| **mahendra** | `mahendra123` | ADMIN | Operations Administrator |
 
 ---
 
-### assets
-
-Stores information about tracked assets.
-
-| Column     | Description              |
-| ---------- | ------------------------ |
-| id         | Asset ID                 |
-| asset_name | Asset Name               |
-| asset_type | Vehicle / Drone / Person |
-| asset_code | Unique Asset Code        |
-| status     | Active / Inactive        |
+## Folder Structure
+For complete folder documentation, see [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md).
 
 ---
 
-### asset_positions
-
-Stores GPS location updates received from assets.
-
-| Column   | Description      |
-| -------- | ---------------- |
-| id       | Position ID      |
-| asset_id | Asset Reference  |
-| geom     | Geographic Point |
-| speed    | Asset Speed      |
-| heading  | Direction        |
-| altitude | Height           |
+## REST API Endpoints
+For detailed specifications of request/response objects, see [API_DOCUMENTATION.md](API_DOCUMENTATION.md).
 
 ---
 
-### geofence_zones
-
-Stores GIS polygon boundaries used for geofencing.
-
-| Column    | Description       |
-| --------- | ----------------- |
-| id        | Zone ID           |
-| zone_name | Zone Name         |
-| zone_type | Restricted / Safe |
-| geom      | Polygon Geometry  |
+## Database Schema
+For tables, spatial indexes, and triggers reference, see [DATABASE_DOCUMENTATION.md](DATABASE_DOCUMENTATION.md).
 
 ---
 
-### alerts
-
-Stores geofence-related alerts.
-
-| Column     | Description     |
-| ---------- | --------------- |
-| id         | Alert ID        |
-| asset_id   | Asset Reference |
-| zone_id    | Zone Reference  |
-| alert_type | ENTER / EXIT    |
-| severity   | Alert Level     |
+## Future Enhancements
+- **Websockets Integration:** Replace long polling with real-time WebSocket messaging for GPS coordinate feeds.
+- **Kafka Telemetry Broker:** Integrate Apache Kafka to support high-throughput message processing from tens of thousands of active field devices.
+- **Security Enhancements:** Add multi-factor authentication (MFA) and JWT-based request signatures.
 
 ---
 
-### track_history
-
-Stores completed asset movement paths.
-
-| Column     | Description         |
-| ---------- | ------------------- |
-| id         | Track ID            |
-| asset_id   | Asset Reference     |
-| path       | LineString Geometry |
-| distance_m | Total Distance      |
-| avg_speed  | Average Speed       |
+## Contributing
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for branch policies, commit style conventions, and reviews procedures.
 
 ---
 
-## Spatial Features
-
-The database uses PostGIS geometry types:
-
-### Point Geometry
-
-Used for asset locations.
-
-```sql
-GEOMETRY(Point,4326)
-```
-
-### Polygon Geometry
-
-Used for geofence zones.
-
-```sql
-GEOMETRY(Polygon,4326)
-```
-
-### LineString Geometry
-
-Used for route history.
-
-```sql
-GEOMETRY(LineString,4326)
-```
+## License
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-## Spatial Indexes
-
-The following GiST indexes are created for performance optimization:
-
-* idx_positions_geom
-* idx_zones_geom
-* idx_track_geom
-
-These indexes improve:
-
-* Spatial Queries
-* Geofence Detection
-* Asset Tracking
-* Route Analysis
-
----
-
-## Sample Data
-
-The database includes sample records for:
-
-### Assets
-
-* Vehicle-01
-* Vehicle-02
-* Drone-01
-* Personnel-01
-
-### Geofence Zones
-
-* Zone-Alpha-Restricted
-* Zone-Bravo-Safe
-
-### GPS Position
-
-Sample coordinate:
-
-```text
-Latitude  : 26.2389
-Longitude : 73.0243
-```
-
-
+## Author
+Developed by the DRDO GIS Tracking System Team.

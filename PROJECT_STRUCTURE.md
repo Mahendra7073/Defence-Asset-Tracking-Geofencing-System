@@ -91,6 +91,5 @@ Defence-Asset-Tracking-Geofencing-System/
     ├── README.md
     ├── gps_simulator.py    # Python simulator generating mock GPS updates
     ├── setup_database.ps1  # Automated database drop and re-seed script
-    ├── setup_environment.bat # Setup diagnostics and status checker
-    └── setup_geoserver.sh  # Script to copy files to GeoServer
+    └── setup_environment.bat # Setup diagnostics and status checker
 ```

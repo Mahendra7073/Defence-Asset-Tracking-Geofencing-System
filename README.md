@@ -220,6 +220,25 @@ Pre-seeded database accounts:
 
 ---
 
+## 📡 REST API Overview
+
+The backend exposes a lightweight REST API protected by session validation:
+
+*   **Authentication**:
+    *   `POST /api/auth/login` - Verify user credentials and initialize session.
+    *   `POST /api/auth/logout` - Invalidate active session.
+    *   `GET /api/auth/session` - Retrieve active session profile details.
+*   **Operational Monitoring**:
+    *   `GET /api/dashboard` - Returns operational summary (total assets, active count, zone metrics, unacknowledged alerts).
+    *   `GET /api/assets` - Retrieves list of all assets in registry.
+    *   `GET /api/positions/latest` - Retrieves latest telemetry points in GeoJSON format.
+    *   `GET /api/geofences` - Retrieves all polygon bounds in GeoJSON format.
+    *   `GET /api/alerts` - Retrieves breach and SOS alerts feed.
+
+*For full schemas and parameter structures, see the [REST API Documentation](docs/API_DOCUMENTATION.md).*
+
+---
+
 ## 🚀 Future Scope
 - **Websockets Stream:** Replace long-polling routes with full-duplex WebSocket connections.
 - **Kafka Telemetry Buffer:** Integrate Kafka message streams to ingestion pipelines for high-throughput tracking.

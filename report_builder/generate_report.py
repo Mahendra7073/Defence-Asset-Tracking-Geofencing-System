@@ -1,5 +1,7 @@
 import os
 import sys
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -91,10 +93,199 @@ def add_caption(doc, label, text):
     run.bold = True
     return p
 
+def generate_vector_diagrams(images_dir):
+    os.makedirs(images_dir, exist_ok=True)
+    
+    # Set default styles
+    plt.rcParams['font.sans-serif'] = 'Arial'
+    plt.rcParams['font.family'] = 'sans-serif'
+    
+    # 1. Overall Architecture Diagram
+    fig, ax = plt.subplots(figsize=(8.5, 4.5), dpi=300)
+    ax.axis('off')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 5)
+    
+    # Boxes
+    ax.text(1.5, 3.8, "Leaflet.js Client\n(Web Frontend)", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=9, weight='bold')
+    ax.text(5.0, 3.8, "Apache Tomcat 9\n(Java 17 Servlet API)", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=9, weight='bold')
+    ax.text(5.0, 1.2, "GeoServer 2.25.2\n(WMS/WFS Renderer)", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=9, weight='bold')
+    ax.text(8.5, 2.5, "PostgreSQL 16\n+ PostGIS 3.4\n(Spatial Database)", bbox=dict(boxstyle="round,pad=0.5", fc="#EDF2F7", ec="#2B6CB0", lw=2), ha='center', va='center', fontsize=9, weight='bold')
+    
+    # Connector arrows
+    ax.annotate("", xy=(3.4, 3.8), xytext=(2.9, 3.8), arrowprops=dict(arrowstyle="<->", lw=1.5, color="#4A5568"))
+    ax.text(3.15, 3.95, "REST JSON\n(HTTP 8080)", ha='center', va='center', fontsize=8)
+    
+    ax.annotate("", xy=(3.4, 1.5), xytext=(2.0, 3.2), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
+    ax.text(2.6, 2.1, "Map tiles WMS/WFS\n(HTTP 8085)", ha='center', va='center', rotation=34, fontsize=8)
+    
+    ax.annotate("", xy=(7.2, 2.8), xytext=(6.5, 3.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
+    ax.text(6.8, 3.3, "HikariCP\nJDBC Ingest", ha='center', va='center', fontsize=8)
+    
+    ax.annotate("", xy=(7.2, 2.2), xytext=(6.5, 1.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
+    ax.text(6.8, 1.7, "PostGIS Store\nQueries", ha='center', va='center', fontsize=8)
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(images_dir, "diag_overall_arch.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # 2. Docker Architecture Diagram
+    fig, ax = plt.subplots(figsize=(8.5, 4.5), dpi=300)
+    ax.axis('off')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 5)
+    
+    # Network box border
+    rect_net = patches.Rectangle((0.2, 0.2), 9.6, 4.6, linewidth=1.5, edgecolor='#4A5568', linestyle='--', facecolor='#F8FAFC')
+    ax.add_patch(rect_net)
+    ax.text(0.5, 4.5, "Docker Bridge Network (defence-net)", fontsize=9, weight='bold', color='#4A5568')
+    
+    # Service containers
+    ax.text(2.0, 3.2, "tomcat container\n(defence-tomcat)\nBuild: Dockerfile\nPort: 8080:8080", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8, weight='bold')
+    ax.text(2.0, 1.2, "geoserver container\n(defence-geoserver)\nImage: kartoza/geoserver\nPort: 8085:8080", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8, weight='bold')
+    ax.text(5.5, 2.2, "postgres container\n(defence-postgres)\nImage: postgis/postgis\nPort: 5432:5432", bbox=dict(boxstyle="round,pad=0.5", fc="#EDF2F7", ec="#2B6CB0", lw=2), ha='center', va='center', fontsize=8, weight='bold')
+    ax.text(8.5, 1.2, "geoserver-setup\n(defence-geoserver-setup)\nSidecar Helper\nExits (0) on complete", bbox=dict(boxstyle="round,pad=0.5", fc="#FEFCBF", ec="#D69E2E", lw=1.5), ha='center', va='center', fontsize=8, weight='bold')
+    
+    # Connections
+    ax.annotate("", xy=(3.8, 2.2), xytext=(3.3, 2.9), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
+    ax.text(3.5, 2.65, "JDBC", ha='center', va='center', fontsize=8)
+    
+    ax.annotate("", xy=(3.8, 2.2), xytext=(3.3, 1.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
+    ax.text(3.5, 1.75, "PostGIS Link", ha='center', va='center', fontsize=8)
+    
+    ax.annotate("", xy=(3.4, 1.2), xytext=(7.1, 1.2), arrowprops=dict(arrowstyle="->", lw=1.5, color="#D69E2E"))
+    ax.text(5.2, 0.95, "Auto-config REST API (WFS/WMS Setup)", ha='center', va='center', fontsize=8)
+    
+    # Volume arrows
+    ax.text(5.5, 4.2, "defence-pgdata volume\n(persistent PostgreSQL data)", bbox=dict(boxstyle="ellipse,pad=0.3", fc="#E2E8F0", ec="#4A5568", lw=1), ha='center', va='center', fontsize=7)
+    ax.annotate("", xy=(5.5, 3.0), xytext=(5.5, 3.8), arrowprops=dict(arrowstyle="<->", lw=1, linestyle=":", color="#4A5568"))
+    
+    ax.text(8.5, 3.2, "defence-geoserver-data\n(persistent GeoServer styles)", bbox=dict(boxstyle="ellipse,pad=0.3", fc="#E2E8F0", ec="#4A5568", lw=1), ha='center', va='center', fontsize=7)
+    ax.annotate("", xy=(3.2, 1.5), xytext=(7.1, 3.0), arrowprops=dict(arrowstyle="<->", lw=1, linestyle=":", color="#4A5568"))
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(images_dir, "diag_docker_arch.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+
+    # 3. Workflow Flowchart
+    fig, ax = plt.subplots(figsize=(8.5, 5.0), dpi=300)
+    ax.axis('off')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 6)
+    
+    # Nodes
+    ax.text(5.0, 5.5, "1. Ingress: GPS Field Transceiver Ingests Coordinates", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8)
+    ax.text(5.0, 4.4, "2. DB Save: Insert row to asset_positions table", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8)
+    ax.text(5.0, 3.3, "3. Evaluation: Trigger invokes trigger_geofence_check()\nExecutes ST_Contains(geofence_polygon, asset_geom)", bbox=dict(boxstyle="round,pad=0.4", fc="#EDF2F7", ec="#2B6CB0", lw=2), ha='center', va='center', fontsize=8)
+    
+    # Diamond for choice
+    ax.text(5.0, 2.1, "4. Breach\nDetected?", bbox=dict(boxstyle="darrow,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8)
+    
+    ax.text(2.0, 1.0, "5A. Log Alarm: Insert CRITICAL\nalert inside alerts registry", bbox=dict(boxstyle="round,pad=0.4", fc="#FED7D7", ec="#9B2C2C", lw=1.5), ha='center', va='center', fontsize=8)
+    ax.text(8.0, 1.0, "5B. Normal state: Update position\nwithout alert generation", bbox=dict(boxstyle="round,pad=0.4", fc="#C6F6D5", ec="#22543D", lw=1.5), ha='center', va='center', fontsize=8)
+    
+    # Arrows
+    ax.annotate("", xy=(5.0, 4.8), xytext=(5.0, 5.2), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
+    ax.annotate("", xy=(5.0, 3.7), xytext=(5.0, 4.1), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
+    ax.annotate("", xy=(5.0, 2.6), xytext=(5.0, 2.9), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
+    
+    ax.annotate("", xy=(3.2, 1.0), xytext=(4.2, 2.1), arrowprops=dict(arrowstyle="->", lw=1.5, color="#9B2C2C"))
+    ax.text(3.5, 1.7, "YES", ha='center', va='center', color="#9B2C2C", weight='bold')
+    
+    ax.annotate("", xy=(6.8, 1.0), xytext=(5.8, 2.1), arrowprops=dict(arrowstyle="->", lw=1.5, color="#22543D"))
+    ax.text(6.5, 1.7, "NO", ha='center', va='center', color="#22543D", weight='bold')
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(images_dir, "diag_workflow.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+
+    # 4. Sequence Diagram
+    fig, ax = plt.subplots(figsize=(8.5, 5.0), dpi=300)
+    ax.axis('off')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 6)
+    
+    # Lifelines
+    lifelines = [
+        ("Asset Transceiver", 1.5),
+        ("PositionServlet", 3.5),
+        ("PostGIS trigger", 5.5),
+        ("Alerts Registry", 7.5),
+        ("Leaflet Map UI", 9.5)
+    ]
+    for name, x in lifelines:
+        ax.plot([x, x], [0.5, 5.2], color='#718096', linestyle='--', linewidth=1)
+        ax.text(x, 5.4, name, ha='center', va='center', fontsize=8, weight='bold', bbox=dict(boxstyle="round,pad=0.3", fc="#E2E8F0", ec="#4A5568"))
+        
+    # Sequence Arrows
+    # 1. Post coordinates
+    ax.annotate("", xy=(3.5, 4.5), xytext=(1.5, 4.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
+    ax.text(2.5, 4.7, "1. Post Coordinates\n(HTTP REST)", ha='center', va='center', fontsize=7)
+    
+    # 2. Insert row
+    ax.annotate("", xy=(5.5, 3.8), xytext=(3.5, 3.8), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
+    ax.text(4.5, 4.0, "2. Save row (JDBC)", ha='center', va='center', fontsize=7)
+    
+    # 3. Trigger check
+    ax.annotate("", xy=(5.5, 3.0), xytext=(5.5, 3.4), arrowprops=dict(arrowstyle="->", lw=1.2, connectionstyle="arc3,rad=0.3", color="#2B6CB0"))
+    ax.text(6.0, 3.2, "3. ST_Contains\nContainment Check", ha='left', va='center', fontsize=7)
+    
+    # 4. Save alert
+    ax.annotate("", xy=(7.5, 2.5), xytext=(5.5, 2.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#9B2C2C"))
+    ax.text(6.5, 2.7, "4. Create Alert\n(on breach)", ha='center', va='center', fontsize=7)
+    
+    # 5. Fetch positions
+    ax.annotate("", xy=(3.5, 1.8), xytext=(9.5, 1.8), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
+    ax.text(6.5, 2.0, "5. Get positions & alarms (10s polling)", ha='center', va='center', fontsize=7)
+    
+    # 6. Redraw map
+    ax.annotate("", xy=(9.5, 1.0), xytext=(9.5, 1.4), arrowprops=dict(arrowstyle="->", lw=1.2, connectionstyle="arc3,rad=0.3", color="#4A5568"))
+    ax.text(10.0, 1.2, "6. Redraw markers\n& trigger alarms", ha='left', va='center', fontsize=7)
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(images_dir, "diag_sequence.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+
+    # 5. Deployment Diagram
+    fig, ax = plt.subplots(figsize=(8.5, 4.5), dpi=300)
+    ax.axis('off')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 5)
+    
+    # Client Node
+    ax.text(1.5, 2.5, "Client Workspace Node\n\n- Web Browser\n- Leaflet Mapping Engine\n- HTML5 Render Canvas\n- Session Cookie Jar", bbox=dict(boxstyle="round,pad=0.5", fc="#F7FAFC", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8)
+    
+    # Server Node
+    rect_srv = patches.Rectangle((3.8, 0.5), 5.8, 4.0, linewidth=2, edgecolor='#1A365D', facecolor='#F7FAFC')
+    ax.add_patch(rect_srv)
+    ax.text(6.7, 4.2, "Enterprise Application Server VM", ha='center', va='center', fontsize=9, weight='bold', color='#1A365D')
+    
+    ax.text(5.0, 2.5, "Tomcat Webapp\nContainer\n(Port 8080)", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1), ha='center', va='center', fontsize=7)
+    ax.text(8.2, 3.2, "PostgreSQL DB\nContainer\n(Port 5432)", bbox=dict(boxstyle="round,pad=0.4", fc="#EDF2F7", ec="#2B6CB0", lw=1.5), ha='center', va='center', fontsize=7)
+    ax.text(8.2, 1.4, "GeoServer GIS\nContainer\n(Port 8085)", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1), ha='center', va='center', fontsize=7)
+    
+    # Network flow within VM
+    ax.annotate("", xy=(7.3, 3.2), xytext=(5.9, 2.7), arrowprops=dict(arrowstyle="->", lw=1, color="#2B6CB0"))
+    ax.text(6.6, 3.1, "Internal Port 5432", ha='center', rotation=20, fontsize=6)
+    
+    ax.annotate("", xy=(7.3, 1.6), xytext=(5.9, 2.3), arrowprops=dict(arrowstyle="->", lw=1, color="#4A5568"))
+    ax.text(6.6, 1.8, "Internal Port 5432", ha='center', rotation=-20, fontsize=6)
+    
+    # Client flow to VM
+    ax.annotate("", xy=(3.8, 2.5), xytext=(3.0, 2.5), arrowprops=dict(arrowstyle="<->", lw=1.5, color="#1A365D"))
+    ax.text(3.4, 2.7, "HTTP", ha='center', fontsize=8)
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(images_dir, "diag_deployment.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+
 def main():
     # Find workspace root path dynamically
     workspace_root = r"c:\Users\ASUS\DRDO Project\Defence-Asset-Tracking-Geofencing-System"
     print(f"Workspace root: {workspace_root}")
+    
+    # Generate the vector diagrams
+    generate_vector_diagrams(os.path.join(workspace_root, "docs", "images"))
     
     doc = Document()
     
@@ -710,6 +901,15 @@ def main():
         "and R-Tree indices to analyze positions on rows creation."
     )
     
+    img_arch = os.path.join(workspace_root, "docs", "images", "diag_overall_arch.png")
+    if os.path.exists(img_arch):
+        doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
+        doc.paragraphs[-1].add_run().add_picture(img_arch, width=Inches(6.0))
+        add_caption(doc, "Figure 4.1", "Overall 3-Tier System Architecture Diagram")
+        p = add_paragraph_with_spacing(doc)
+        p.runs[0].text = "Figure 4.1 illustrates the three distinct layers of the system, showcasing the decoupling of the client web-canvas from the Java Servlet application backend and spatial database. Each layer communicates over standardized TCP network ports."
+        p.runs[0].italic = True
+
     add_heading_with_spacing(doc, "4.2 Database Design & Schemas", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
@@ -729,12 +929,16 @@ def main():
         p = add_paragraph_with_spacing(doc, before=0, after=4)
         p.add_run(f"  • **{table_name}**: {desc}")
         
-    # Insert database ER diagram if exists
+    doc.add_page_break()
+    
     erd_path = os.path.join(workspace_root, "docs", "database_erd.png")
     if os.path.exists(erd_path):
         doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
         doc.paragraphs[-1].add_run().add_picture(erd_path, width=Inches(6.0))
-        add_caption(doc, "Figure 4.1", "Entity Relationship Diagram (ERD) of Defence GIS database")
+        add_caption(doc, "Figure 4.6", "Entity Relationship Diagram (ERD) of Defence GIS database")
+        p = add_paragraph_with_spacing(doc)
+        p.runs[0].text = "Figure 4.6 provides a complete database data-dictionary schema mapping all primary key, foreign key linkages, data types, and index locations."
+        p.runs[0].italic = True
 
     add_heading_with_spacing(doc, "4.3 Dynamic Sequence Workflows", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
@@ -753,6 +957,24 @@ def main():
         p = add_paragraph_with_spacing(doc, before=0, after=4)
         p.add_run(f"  • {step}")
 
+    img_work = os.path.join(workspace_root, "docs", "images", "diag_workflow.png")
+    if os.path.exists(img_work):
+        doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
+        doc.paragraphs[-1].add_run().add_picture(img_work, width=Inches(5.5))
+        add_caption(doc, "Figure 4.3", "Telemetry Ingestion, Spatial Analysis, and Alerts Workflow Diagram")
+        p = add_paragraph_with_spacing(doc)
+        p.runs[0].text = "Figure 4.3 outlines the structural logical steps from coordinates telemetry ingress to geofence containment checks and alarms dispatch."
+        p.runs[0].italic = True
+
+    img_seq = os.path.join(workspace_root, "docs", "images", "diag_sequence.png")
+    if os.path.exists(img_seq):
+        doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
+        doc.paragraphs[-1].add_run().add_picture(img_seq, width=Inches(5.5))
+        add_caption(doc, "Figure 4.4", "Ingestion & Breach Detection Sequence Diagram")
+        p = add_paragraph_with_spacing(doc)
+        p.runs[0].text = "Figure 4.4 shows the timeline call sequences between the external asset transceiver, servlet container, database trigger, and frontend GUI panel."
+        p.runs[0].italic = True
+
     add_heading_with_spacing(doc, "4.4 Deployment Topology (Docker Orchestration)", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
@@ -761,6 +983,24 @@ def main():
         "and geoserver handles vector map rendering on port 8085. A private bridge network (defence-net) isolates database "
         "and mapping links, ensuring high security and modularity."
     )
+    
+    img_docker = os.path.join(workspace_root, "docs", "images", "diag_docker_arch.png")
+    if os.path.exists(img_docker):
+        doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
+        doc.paragraphs[-1].add_run().add_picture(img_docker, width=Inches(6.0))
+        add_caption(doc, "Figure 4.2", "Dockerized Multi-Container Network & Volumes Topology Diagram")
+        p = add_paragraph_with_spacing(doc)
+        p.runs[0].text = "Figure 4.2 highlights container mappings inside the private bridge network, indicating volume data storage and mapping setups sidecar ports."
+        p.runs[0].italic = True
+
+    img_deploy = os.path.join(workspace_root, "docs", "images", "diag_deployment.png")
+    if os.path.exists(img_deploy):
+        doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
+        doc.paragraphs[-1].add_run().add_picture(img_deploy, width=Inches(6.0))
+        add_caption(doc, "Figure 4.5", "Enterprise Deployment Topology with Port Mappings")
+        p = add_paragraph_with_spacing(doc)
+        p.runs[0].text = "Figure 4.5 describes server execution environments mapping host virtual ports to individual containers."
+        p.runs[0].italic = True
     
     doc.add_page_break()
 
@@ -1032,21 +1272,36 @@ def main():
         "The visual results of the interface are shown below:"
     )
     
-    # Loop through screenshots and add them with captions
-    images_to_add = [
-        ("landing.png", "Landing Page", " COMMAND Tactical Portal Welcome Page"),
-        ("login.png", "Login Page", " Secure Portal Authentication Panel"),
-        ("dashboard.png", "Dashboard Metrics", " Real-Time Assets & Alerts Metrics Statistics"),
-        ("tracking.png", "Live Tracking Map", " Real-Time Telemetry Map Tracker Overlay"),
-        ("geofence.png", "Geofence Zones Map", " Perimeter Geofencing Restricted & Safe Zones"),
-        ("alerts.png", "Alarms Feed Table", " Breach Detection Alarms Logs Registry")
+    # Explicitly add all screenshots with detailed descriptions
+    screenshots = [
+        ("geoserver_welcome.png", "GeoServer Administration Panel", "Welcome Page of GeoServer spatial application",
+         "Figure 10.1 shows the web administration console of the GeoServer service running on host port 8085. The dashboard enables administrators to verify the system status, check memory allocations, and configure workspace namespaces."),
+        ("geoserver_layers.png", "GeoServer Layer Publications List", "Published Vector Map Layers in GeoServer Web Admin",
+         "Figure 10.2 shows the list of registered spatial layers including defence:asset_positions, defence:geofence_zones, and defence:track_history. These are bound to the PostGIS datastore and served using OGC standards."),
+        ("landing.png", "Tactical Portal Welcome Page", "Welcome Landing Interface",
+         "Figure 10.3 presents the dark-themed tactical portal landing page. It showcases system stats, active users counts, and link paths to the main login portal."),
+        ("login.png", "Secure Portal Authentication Panel", "Portal Authentication and BCrypt Verification Page",
+         "Figure 10.4 shows the secure portal login page, enforcing BCrypt authentication filters and guarding user sessions before exposing operational views."),
+        ("dashboard.png", "Operational Dashboard Statistics", "Real-Time Fleet & perimeter Alerts KPI Metrics Panel",
+         "Figure 10.5 highlights the real-time operational dashboard compiling active combat units, geofenced boundaries, and unacknowledged breach alerts."),
+        ("tracking.png", "Live Mapping Tracking Interface", "Real-Time Map Tracker Overlay",
+         "Figure 10.6 showcases the interactive Leaflet mapping dashboard displaying live telemetry coordinates and active tracks overlay."),
+        ("geofence.png", "Perimeter Geofencing restricted boundaries", "Perimeter Geofencing Restricted & Warning Zones Map",
+         "Figure 10.7 illustrates the geofencing layer displaying restricted sectors (red polygons) and warning perimeter boundaries (orange polygons)."),
+        ("alerts.png", "Breach Alarm Event Log Grid", "Breach Detection Alarms Logs Registry",
+         "Figure 10.8 presents the active alerts grid, recording violating assets, breached zones, entry/exit timestamp, and operator actions."),
+        ("reports.png", "Analytical Report Compilation Interface", "Analytical Reports and Coordinates Query Page",
+         "Figure 10.9 highlights the report compile workspace, allowing operators to filter history track coordinates and export session audits.")
     ]
-    for idx, (img_file, title, caption) in enumerate(images_to_add):
+    for idx, (img_file, title, caption, desc) in enumerate(screenshots):
         img_path = os.path.join(workspace_root, "docs", "images", img_file)
         if os.path.exists(img_path):
             doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
             doc.paragraphs[-1].add_run().add_picture(img_path, width=Inches(5.0))
             add_caption(doc, f"Figure 10.{idx+1}", f"{title} - {caption}")
+            p = add_paragraph_with_spacing(doc)
+            p.runs[0].text = desc
+            p.runs[0].italic = True
             
     add_heading_with_spacing(doc, "10.2 Advantages & Defence Applications", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)

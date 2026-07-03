@@ -1,0 +1,108 @@
+# ============================================================
+# Defence GIS Tracking System — Docker Compose
+# ============================================================
+# One-command deployment:  docker compose up -d
+# ============================================================
+
+services:
+
+  # ── PostgreSQL + PostGIS ──────────────────────────────────
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: defence-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-defence_gis}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - defence-pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-defence_gis}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - defence-net
+
+  # ── Tomcat 9 + Java 17 (Backend + Frontend WAR) ──────────
+  tomcat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: defence-tomcat
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - defence-net
+
+  # ── GeoServer ─────────────────────────────────────────────
+  geoserver:
+    image: kartoza/geoserver:2.25.2
+    container_name: defence-geoserver
+    restart: unless-stopped
+    environment:
+      GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER:-admin}
+      GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD:-geoserver}
+      GEOSERVER_DATA_DIR: /opt/geoserver/data_dir
+      STABLE_EXTENSIONS: ""
+      COMMUNITY_EXTENSIONS: ""
+    ports:
+      - "8085:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - defence-geoserver-data:/opt/geoserver/data_dir
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/geoserver/web/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    networks:
+      - defence-net
+
+  # ── GeoServer Setup sidecar ───────────────────────────────
+  geoserver-setup:
+    image: kartoza/geoserver:2.25.2
+    container_name: defence-geoserver-setup
+    depends_on:
+      geoserver:
+        condition: service_healthy
+    volumes:
+      - ./docker/geoserver/setup_geoserver.sh:/scripts/setup_geoserver.sh:ro
+      - ./geoserver/styles:/geoserver/styles:ro
+    environment:
+      GEOSERVER_URL: http://geoserver:8080/geoserver
+      GS_USER: admin
+      GS_PASS: geoserver
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: defence_gis
+      DB_USER: postgres
+      DB_PASS: postgres
+    entrypoint: ["/bin/bash", "/scripts/setup_geoserver.sh"]
+    networks:
+      - defence-net
+
+# ── Named Volumes ───────────────────────────────────────────
+volumes:
+  defence-pgdata:
+    name: defence-pgdata
+  defence-geoserver-data:
+    name: defence-geoserver-data
+
+# ── Network ─────────────────────────────────────────────────
+networks:
+  defence-net:
+    name: defence-net
+    driver: bridge

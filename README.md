@@ -142,6 +142,72 @@ Prerequisites include JDK 17, Maven 3.8+, Tomcat 9.0+, and PostgreSQL with PostG
 
 ---
 
+## 🐳 Docker Deployment (Recommended)
+
+Deploy the entire system with a single command — no manual installation of Java, Tomcat, PostgreSQL, PostGIS, or GeoServer required.
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running (Windows/Linux/macOS)
+- Git
+
+### Quick Start
+```bash
+# 1. Clone the repository
+git clone https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System.git
+cd Defence-Asset-Tracking-Geofencing-System
+
+# 2. Build and start all containers
+docker compose up -d --build
+
+# 3. Wait for initialization (~2-3 minutes on first run)
+docker compose ps     # Check all containers are "healthy"
+
+# 4. Open browser
+# Application:  http://localhost:8080/DefenceGIS
+# GeoServer:    http://localhost:8085/geoserver
+```
+
+### Docker Commands
+| Command | Description |
+|---|---|
+| `docker compose up -d --build` | Build and start all services |
+| `docker compose up -d` | Start services (after initial build) |
+| `docker compose down` | Stop and remove containers |
+| `docker compose restart` | Restart all services |
+| `docker compose logs -f` | Follow live logs |
+| `docker compose logs -f tomcat` | Follow Tomcat logs only |
+| `docker compose ps` | Check container status |
+| `docker compose down -v` | Stop and remove containers + volumes (full reset) |
+
+### Container Architecture
+| Container | Image | Port | Purpose |
+|---|---|---|---|
+| `defence-postgres` | `postgis/postgis:16-3.4` | `5432` | PostgreSQL + PostGIS database |
+| `defence-tomcat` | Multi-stage build | `8080` | Java 17 + Tomcat 9 + WAR |
+| `defence-geoserver` | `kartoza/geoserver:2.25.2` | `8085` | GeoServer WMS/WFS service |
+
+### GeoServer Configuration
+After containers are healthy, run the GeoServer setup script once:
+```bash
+# Linux/macOS/WSL
+bash docker/geoserver/setup_geoserver.sh
+
+# Windows (Git Bash or WSL)
+bash docker/geoserver/setup_geoserver.sh
+```
+
+### Environment Variables
+Docker configuration values are stored in `.env`:
+```properties
+POSTGRES_DB=defence_gis
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+GEOSERVER_ADMIN_USER=admin
+GEOSERVER_ADMIN_PASSWORD=geoserver
+```
+
+
+
 ## 🔐 Default Credentials
 
 Pre-seeded database accounts:

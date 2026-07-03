@@ -222,7 +222,7 @@ var MapController = {
 
     addWmsLayer: function() {
         if (this.wmsLayer) return;
-        this.wmsLayer = L.tileLayer.wms('http://localhost:8080/geoserver/defence/wms', {
+        this.wmsLayer = L.tileLayer.wms('http://localhost:8085/geoserver/defence/wms', {
             layers: 'defence:asset_positions',
             format: 'image/png',
             transparent: true,

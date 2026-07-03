@@ -34,6 +34,7 @@ ehthumbs.db
 
 # ----- Environment / Secrets -----
 *.env
+!.env
 *.properties
 !src/main/resources/db.properties.example
 
@@ -44,10 +45,11 @@ package-lock.json
 # ----- GeoServer Data Directory -----
 geoserver/data_dir/
 
+# ----- Docker -----
+docker/postgres/init.sql
+
 # ----- Misc -----
 *.bak
 *.tmp
 *.temp
 logs/
-
-

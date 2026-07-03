@@ -1,0 +1,45 @@
+# ===========================
+# Docker Build Context Ignore
+# Defence GIS Tracking System
+# ===========================
+
+# Version control
+.git
+.github
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Documentation (not needed in build)
+docs/
+diagrams/
+test-cases/
+*.md
+LICENSE
+
+# Build artifacts (we rebuild inside Docker)
+backend/target/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Scripts (not needed in container)
+scripts/
+
+# Docker files (no recursive copy)
+docker-compose.yml
+.dockerignore
+
+# Misc
+*.bak
+*.tmp
+*.temp
+logs/
+node_modules/

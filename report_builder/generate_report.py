@@ -34,15 +34,15 @@ def add_heading_with_spacing(doc, text, level, before=18, after=6):
     run = heading.runs[0]
     run.font.name = 'Times New Roman'
     if level == 1:
-        run.font.size = Pt(16)
+        run.font.size = Pt(14)
         run.font.color.rgb = RGBColor(0, 0, 0)
         run.bold = True
     elif level == 2:
-        run.font.size = Pt(14)
+        run.font.size = Pt(12)
         run.font.color.rgb = RGBColor(50, 50, 50)
         run.bold = True
     elif level == 3:
-        run.font.size = Pt(12)
+        run.font.size = Pt(11)
         run.font.color.rgb = RGBColor(100, 100, 100)
         run.bold = True
         run.italic = True
@@ -66,7 +66,6 @@ def add_code_block(doc, code_text):
     p.paragraph_format.line_spacing = 1.15
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     
-    # Border & background xml configuration for clean callout block
     pBdr = parse_xml(r'<w:pBdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
                      r'<w:left w:val="single" w:sz="24" w:space="12" w:color="A0A0A0"/>'
                      r'</w:pBdr>')
@@ -95,36 +94,27 @@ def add_caption(doc, label, text):
 
 def generate_vector_diagrams(images_dir):
     os.makedirs(images_dir, exist_ok=True)
-    
-    # Set default styles
     plt.rcParams['font.sans-serif'] = 'Arial'
     plt.rcParams['font.family'] = 'sans-serif'
     
-    # 1. Overall Architecture Diagram
+    # 1. Overall System Architecture
     fig, ax = plt.subplots(figsize=(8.5, 4.5), dpi=300)
     ax.axis('off')
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 5)
-    
-    # Boxes
     ax.text(1.5, 3.8, "Leaflet.js Client\n(Web Frontend)", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=9, weight='bold')
     ax.text(5.0, 3.8, "Apache Tomcat 9\n(Java 17 Servlet API)", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=9, weight='bold')
     ax.text(5.0, 1.2, "GeoServer 2.25.2\n(WMS/WFS Renderer)", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=9, weight='bold')
     ax.text(8.5, 2.5, "PostgreSQL 16\n+ PostGIS 3.4\n(Spatial Database)", bbox=dict(boxstyle="round,pad=0.5", fc="#EDF2F7", ec="#2B6CB0", lw=2), ha='center', va='center', fontsize=9, weight='bold')
     
-    # Connector arrows
     ax.annotate("", xy=(3.4, 3.8), xytext=(2.9, 3.8), arrowprops=dict(arrowstyle="<->", lw=1.5, color="#4A5568"))
     ax.text(3.15, 3.95, "REST JSON\n(HTTP 8080)", ha='center', va='center', fontsize=8)
-    
     ax.annotate("", xy=(3.4, 1.5), xytext=(2.0, 3.2), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
     ax.text(2.6, 2.1, "Map tiles WMS/WFS\n(HTTP 8085)", ha='center', va='center', rotation=34, fontsize=8)
-    
     ax.annotate("", xy=(7.2, 2.8), xytext=(6.5, 3.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
     ax.text(6.8, 3.3, "HikariCP\nJDBC Ingest", ha='center', va='center', fontsize=8)
-    
     ax.annotate("", xy=(7.2, 2.2), xytext=(6.5, 1.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
     ax.text(6.8, 1.7, "PostGIS Store\nQueries", ha='center', va='center', fontsize=8)
-    
     plt.tight_layout()
     plt.savefig(os.path.join(images_dir, "diag_overall_arch.png"), dpi=300, bbox_inches='tight')
     plt.close()
@@ -134,35 +124,24 @@ def generate_vector_diagrams(images_dir):
     ax.axis('off')
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 5)
-    
-    # Network box border
     rect_net = patches.Rectangle((0.2, 0.2), 9.6, 4.6, linewidth=1.5, edgecolor='#4A5568', linestyle='--', facecolor='#F8FAFC')
     ax.add_patch(rect_net)
     ax.text(0.5, 4.5, "Docker Bridge Network (defence-net)", fontsize=9, weight='bold', color='#4A5568')
-    
-    # Service containers
     ax.text(2.0, 3.2, "tomcat container\n(defence-tomcat)\nBuild: Dockerfile\nPort: 8080:8080", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8, weight='bold')
     ax.text(2.0, 1.2, "geoserver container\n(defence-geoserver)\nImage: kartoza/geoserver\nPort: 8085:8080", bbox=dict(boxstyle="round,pad=0.5", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8, weight='bold')
     ax.text(5.5, 2.2, "postgres container\n(defence-postgres)\nImage: postgis/postgis\nPort: 5432:5432", bbox=dict(boxstyle="round,pad=0.5", fc="#EDF2F7", ec="#2B6CB0", lw=2), ha='center', va='center', fontsize=8, weight='bold')
     ax.text(8.5, 1.2, "geoserver-setup\n(defence-geoserver-setup)\nSidecar Helper\nExits (0) on complete", bbox=dict(boxstyle="round,pad=0.5", fc="#FEFCBF", ec="#D69E2E", lw=1.5), ha='center', va='center', fontsize=8, weight='bold')
-    
-    # Connections
     ax.annotate("", xy=(3.8, 2.2), xytext=(3.3, 2.9), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
     ax.text(3.5, 2.65, "JDBC", ha='center', va='center', fontsize=8)
-    
     ax.annotate("", xy=(3.8, 2.2), xytext=(3.3, 1.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
     ax.text(3.5, 1.75, "PostGIS Link", ha='center', va='center', fontsize=8)
-    
     ax.annotate("", xy=(3.4, 1.2), xytext=(7.1, 1.2), arrowprops=dict(arrowstyle="->", lw=1.5, color="#D69E2E"))
     ax.text(5.2, 0.95, "Auto-config REST API (WFS/WMS Setup)", ha='center', va='center', fontsize=8)
     
-    # Volume arrows
     ax.text(5.5, 4.2, "defence-pgdata volume\n(persistent PostgreSQL data)", bbox=dict(boxstyle="ellipse,pad=0.3", fc="#E2E8F0", ec="#4A5568", lw=1), ha='center', va='center', fontsize=7)
     ax.annotate("", xy=(5.5, 3.0), xytext=(5.5, 3.8), arrowprops=dict(arrowstyle="<->", lw=1, linestyle=":", color="#4A5568"))
-    
     ax.text(8.5, 3.2, "defence-geoserver-data\n(persistent GeoServer styles)", bbox=dict(boxstyle="ellipse,pad=0.3", fc="#E2E8F0", ec="#4A5568", lw=1), ha='center', va='center', fontsize=7)
     ax.annotate("", xy=(3.2, 1.5), xytext=(7.1, 3.0), arrowprops=dict(arrowstyle="<->", lw=1, linestyle=":", color="#4A5568"))
-    
     plt.tight_layout()
     plt.savefig(os.path.join(images_dir, "diag_docker_arch.png"), dpi=300, bbox_inches='tight')
     plt.close()
@@ -172,29 +151,19 @@ def generate_vector_diagrams(images_dir):
     ax.axis('off')
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 6)
-    
-    # Nodes
     ax.text(5.0, 5.5, "1. Ingress: GPS Field Transceiver Ingests Coordinates", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8)
     ax.text(5.0, 4.4, "2. DB Save: Insert row to asset_positions table", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8)
     ax.text(5.0, 3.3, "3. Evaluation: Trigger invokes trigger_geofence_check()\nExecutes ST_Contains(geofence_polygon, asset_geom)", bbox=dict(boxstyle="round,pad=0.4", fc="#EDF2F7", ec="#2B6CB0", lw=2), ha='center', va='center', fontsize=8)
-    
-    # Diamond for choice
     ax.text(5.0, 2.1, "4. Breach\nDetected?", bbox=dict(boxstyle="darrow,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8)
-    
     ax.text(2.0, 1.0, "5A. Log Alarm: Insert CRITICAL\nalert inside alerts registry", bbox=dict(boxstyle="round,pad=0.4", fc="#FED7D7", ec="#9B2C2C", lw=1.5), ha='center', va='center', fontsize=8)
     ax.text(8.0, 1.0, "5B. Normal state: Update position\nwithout alert generation", bbox=dict(boxstyle="round,pad=0.4", fc="#C6F6D5", ec="#22543D", lw=1.5), ha='center', va='center', fontsize=8)
-    
-    # Arrows
     ax.annotate("", xy=(5.0, 4.8), xytext=(5.0, 5.2), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
     ax.annotate("", xy=(5.0, 3.7), xytext=(5.0, 4.1), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
     ax.annotate("", xy=(5.0, 2.6), xytext=(5.0, 2.9), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
-    
     ax.annotate("", xy=(3.2, 1.0), xytext=(4.2, 2.1), arrowprops=dict(arrowstyle="->", lw=1.5, color="#9B2C2C"))
     ax.text(3.5, 1.7, "YES", ha='center', va='center', color="#9B2C2C", weight='bold')
-    
     ax.annotate("", xy=(6.8, 1.0), xytext=(5.8, 2.1), arrowprops=dict(arrowstyle="->", lw=1.5, color="#22543D"))
     ax.text(6.5, 1.7, "NO", ha='center', va='center', color="#22543D", weight='bold')
-    
     plt.tight_layout()
     plt.savefig(os.path.join(images_dir, "diag_workflow.png"), dpi=300, bbox_inches='tight')
     plt.close()
@@ -204,8 +173,6 @@ def generate_vector_diagrams(images_dir):
     ax.axis('off')
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 6)
-    
-    # Lifelines
     lifelines = [
         ("Asset Transceiver", 1.5),
         ("PositionServlet", 3.5),
@@ -216,32 +183,18 @@ def generate_vector_diagrams(images_dir):
     for name, x in lifelines:
         ax.plot([x, x], [0.5, 5.2], color='#718096', linestyle='--', linewidth=1)
         ax.text(x, 5.4, name, ha='center', va='center', fontsize=8, weight='bold', bbox=dict(boxstyle="round,pad=0.3", fc="#E2E8F0", ec="#4A5568"))
-        
-    # Sequence Arrows
-    # 1. Post coordinates
     ax.annotate("", xy=(3.5, 4.5), xytext=(1.5, 4.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
     ax.text(2.5, 4.7, "1. Post Coordinates\n(HTTP REST)", ha='center', va='center', fontsize=7)
-    
-    # 2. Insert row
     ax.annotate("", xy=(5.5, 3.8), xytext=(3.5, 3.8), arrowprops=dict(arrowstyle="->", lw=1.5, color="#2B6CB0"))
     ax.text(4.5, 4.0, "2. Save row (JDBC)", ha='center', va='center', fontsize=7)
-    
-    # 3. Trigger check
     ax.annotate("", xy=(5.5, 3.0), xytext=(5.5, 3.4), arrowprops=dict(arrowstyle="->", lw=1.2, connectionstyle="arc3,rad=0.3", color="#2B6CB0"))
     ax.text(6.0, 3.2, "3. ST_Contains\nContainment Check", ha='left', va='center', fontsize=7)
-    
-    # 4. Save alert
     ax.annotate("", xy=(7.5, 2.5), xytext=(5.5, 2.5), arrowprops=dict(arrowstyle="->", lw=1.5, color="#9B2C2C"))
     ax.text(6.5, 2.7, "4. Create Alert\n(on breach)", ha='center', va='center', fontsize=7)
-    
-    # 5. Fetch positions
     ax.annotate("", xy=(3.5, 1.8), xytext=(9.5, 1.8), arrowprops=dict(arrowstyle="->", lw=1.5, color="#4A5568"))
     ax.text(6.5, 2.0, "5. Get positions & alarms (10s polling)", ha='center', va='center', fontsize=7)
-    
-    # 6. Redraw map
     ax.annotate("", xy=(9.5, 1.0), xytext=(9.5, 1.4), arrowprops=dict(arrowstyle="->", lw=1.2, connectionstyle="arc3,rad=0.3", color="#4A5568"))
     ax.text(10.0, 1.2, "6. Redraw markers\n& trigger alarms", ha='left', va='center', fontsize=7)
-    
     plt.tight_layout()
     plt.savefig(os.path.join(images_dir, "diag_sequence.png"), dpi=300, bbox_inches='tight')
     plt.close()
@@ -251,40 +204,114 @@ def generate_vector_diagrams(images_dir):
     ax.axis('off')
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 5)
-    
-    # Client Node
     ax.text(1.5, 2.5, "Client Workspace Node\n\n- Web Browser\n- Leaflet Mapping Engine\n- HTML5 Render Canvas\n- Session Cookie Jar", bbox=dict(boxstyle="round,pad=0.5", fc="#F7FAFC", ec="#4A5568", lw=1.5), ha='center', va='center', fontsize=8)
-    
-    # Server Node
     rect_srv = patches.Rectangle((3.8, 0.5), 5.8, 4.0, linewidth=2, edgecolor='#1A365D', facecolor='#F7FAFC')
     ax.add_patch(rect_srv)
     ax.text(6.7, 4.2, "Enterprise Application Server VM", ha='center', va='center', fontsize=9, weight='bold', color='#1A365D')
-    
     ax.text(5.0, 2.5, "Tomcat Webapp\nContainer\n(Port 8080)", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1), ha='center', va='center', fontsize=7)
     ax.text(8.2, 3.2, "PostgreSQL DB\nContainer\n(Port 5432)", bbox=dict(boxstyle="round,pad=0.4", fc="#EDF2F7", ec="#2B6CB0", lw=1.5), ha='center', va='center', fontsize=7)
     ax.text(8.2, 1.4, "GeoServer GIS\nContainer\n(Port 8085)", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568", lw=1), ha='center', va='center', fontsize=7)
-    
-    # Network flow within VM
     ax.annotate("", xy=(7.3, 3.2), xytext=(5.9, 2.7), arrowprops=dict(arrowstyle="->", lw=1, color="#2B6CB0"))
     ax.text(6.6, 3.1, "Internal Port 5432", ha='center', rotation=20, fontsize=6)
-    
     ax.annotate("", xy=(7.3, 1.6), xytext=(5.9, 2.3), arrowprops=dict(arrowstyle="->", lw=1, color="#4A5568"))
     ax.text(6.6, 1.8, "Internal Port 5432", ha='center', rotation=-20, fontsize=6)
-    
-    # Client flow to VM
     ax.annotate("", xy=(3.8, 2.5), xytext=(3.0, 2.5), arrowprops=dict(arrowstyle="<->", lw=1.5, color="#1A365D"))
     ax.text(3.4, 2.7, "HTTP", ha='center', fontsize=8)
-    
     plt.tight_layout()
     plt.savefig(os.path.join(images_dir, "diag_deployment.png"), dpi=300, bbox_inches='tight')
     plt.close()
 
+    # 6. Use Case Diagram
+    fig, ax = plt.subplots(figsize=(8.5, 4.5), dpi=300)
+    ax.axis('off')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 5)
+    # Draw actors
+    ax.text(1.5, 4.0, "Field Asset\n(Transceiver)", ha='center', va='center', fontsize=8, weight='bold', bbox=dict(boxstyle="round", fc="#F7FAFC", ec="#4A5568"))
+    ax.text(1.5, 2.5, "Command Operator\n(User)", ha='center', va='center', fontsize=8, weight='bold', bbox=dict(boxstyle="round", fc="#F7FAFC", ec="#4A5568"))
+    ax.text(1.5, 1.0, "GIS Administrator\n(Sysadmin)", ha='center', va='center', fontsize=8, weight='bold', bbox=dict(boxstyle="round", fc="#F7FAFC", ec="#4A5568"))
+    # Use cases
+    ax.text(6.0, 4.2, "Ingest GPS Telemetry", bbox=dict(boxstyle="ellipse,pad=0.3", fc="#E2E8F0", ec="#4A5568"), ha='center', fontsize=8)
+    ax.text(6.0, 3.4, "Monitor Active Markers", bbox=dict(boxstyle="ellipse,pad=0.3", fc="#E2E8F0", ec="#4A5568"), ha='center', fontsize=8)
+    ax.text(6.0, 2.6, "Manage Geofence Zones", bbox=dict(boxstyle="ellipse,pad=0.3", fc="#E2E8F0", ec="#4A5568"), ha='center', fontsize=8)
+    ax.text(6.0, 1.8, "Acknowledge Breach Alerts", bbox=dict(boxstyle="ellipse,pad=0.3", fc="#E2E8F0", ec="#4A5568"), ha='center', fontsize=8)
+    ax.text(6.0, 1.0, "Configure Spatial GIS Layers", bbox=dict(boxstyle="ellipse,pad=0.3", fc="#E2E8F0", ec="#4A5568"), ha='center', fontsize=8)
+    # Actor linkages
+    ax.annotate("", xy=(4.5, 4.2), xytext=(2.2, 4.0), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.annotate("", xy=(4.5, 3.4), xytext=(2.2, 2.5), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.annotate("", xy=(4.5, 2.6), xytext=(2.2, 2.5), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.annotate("", xy=(4.5, 1.8), xytext=(2.2, 2.5), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.annotate("", xy=(4.5, 1.0), xytext=(2.2, 1.0), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    plt.tight_layout()
+    plt.savefig(os.path.join(images_dir, "diag_use_case.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+
+    # 7. Activity Diagram
+    fig, ax = plt.subplots(figsize=(8.5, 5.0), dpi=300)
+    ax.axis('off')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 6)
+    ax.text(5.0, 5.6, "START: Operator Login Authenticated", bbox=dict(boxstyle="round", fc="#E2E8F0"), ha='center', fontsize=8)
+    ax.text(5.0, 4.6, "Load Map Dashboard & Load Spatial Layers", bbox=dict(boxstyle="round", fc="#E2E8F0"), ha='center', fontsize=8)
+    ax.text(5.0, 3.6, "AJAX Telemetry Polling Loop Initiated (10s)", bbox=dict(boxstyle="round", fc="#E2E8F0"), ha='center', fontsize=8)
+    ax.text(5.0, 2.6, "Redraw Leaflet Marker Canvas & Display Active Positions", bbox=dict(boxstyle="round", fc="#E2E8F0"), ha='center', fontsize=8)
+    ax.text(5.0, 1.6, "Acknowledge Alerts in Alarms Log Grid", bbox=dict(boxstyle="round", fc="#E2E8F0"), ha='center', fontsize=8)
+    ax.text(5.0, 0.6, "END: Generate Analytical Reports", bbox=dict(boxstyle="round", fc="#E2E8F0"), ha='center', fontsize=8)
+    ax.annotate("", xy=(5.0, 5.0), xytext=(5.0, 5.4), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.annotate("", xy=(5.0, 4.0), xytext=(5.0, 4.4), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.annotate("", xy=(5.0, 3.0), xytext=(5.0, 3.4), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.annotate("", xy=(5.0, 2.0), xytext=(5.0, 2.4), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.annotate("", xy=(5.0, 1.0), xytext=(5.0, 1.4), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    plt.tight_layout()
+    plt.savefig(os.path.join(images_dir, "diag_activity.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+
+    # 8. GeoServer Request Flow
+    fig, ax = plt.subplots(figsize=(8.5, 4.5), dpi=300)
+    ax.axis('off')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 5)
+    ax.text(1.5, 2.5, "Browser Client\n(Leaflet Map)", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568"), ha='center', va='center', fontsize=8)
+    ax.text(5.0, 2.5, "GeoServer Engine\n(WMS/WFS Parser)", bbox=dict(boxstyle="round,pad=0.4", fc="#FEFCBF", ec="#D69E2E"), ha='center', va='center', fontsize=8)
+    ax.text(8.5, 2.5, "PostgreSQL+PostGIS\n(Datastore)", bbox=dict(boxstyle="round,pad=0.4", fc="#EDF2F7", ec="#2B6CB0"), ha='center', va='center', fontsize=8)
+    ax.annotate("", xy=(3.8, 2.7), xytext=(2.6, 2.7), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.text(3.2, 2.9, "1. GetMap\nWMS request", ha='center', fontsize=7)
+    ax.annotate("", xy=(2.6, 2.3), xytext=(3.8, 2.3), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.text(3.2, 2.0, "4. Return PNG\nImage Tile", ha='center', fontsize=7)
+    ax.annotate("", xy=(7.3, 2.7), xytext=(6.2, 2.7), arrowprops=dict(arrowstyle="->", lw=1.2, color="#2B6CB0"))
+    ax.text(6.75, 2.9, "2. JDBC Spatial\nQuery", ha='center', fontsize=7)
+    ax.annotate("", xy=(6.2, 2.3), xytext=(7.3, 2.3), arrowprops=dict(arrowstyle="->", lw=1.2, color="#2B6CB0"))
+    ax.text(6.75, 2.0, "3. Vector Geometries\nRecordset", ha='center', fontsize=7)
+    plt.tight_layout()
+    plt.savefig(os.path.join(images_dir, "diag_geoserver_flow.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+
+    # 9. REST API Flow
+    fig, ax = plt.subplots(figsize=(8.5, 4.5), dpi=300)
+    ax.axis('off')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 5)
+    ax.text(1.5, 2.5, "Asset GPS\nTransmitter", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568"), ha='center', va='center', fontsize=8)
+    ax.text(5.0, 2.5, "Tomcat Server\n(PositionServlet)", bbox=dict(boxstyle="round,pad=0.4", fc="#E2E8F0", ec="#4A5568"), ha='center', va='center', fontsize=8)
+    ax.text(8.5, 2.5, "PostgreSQL Database\n(HikariCP Pool)", bbox=dict(boxstyle="round,pad=0.4", fc="#EDF2F7", ec="#2B6CB0"), ha='center', va='center', fontsize=8)
+    ax.annotate("", xy=(3.8, 2.7), xytext=(2.6, 2.7), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.text(3.2, 2.9, "1. POST JSON\nCoordinates", ha='center', fontsize=7)
+    ax.annotate("", xy=(2.6, 2.3), xytext=(3.8, 2.3), arrowprops=dict(arrowstyle="->", lw=1.2, color="#4A5568"))
+    ax.text(3.2, 2.0, "4. Return HTTP\n201 Created", ha='center', fontsize=7)
+    ax.annotate("", xy=(7.3, 2.7), xytext=(6.2, 2.7), arrowprops=dict(arrowstyle="->", lw=1.2, color="#2B6CB0"))
+    ax.text(6.75, 2.9, "2. SQL Insert\nJDBC Statement", ha='center', fontsize=7)
+    ax.annotate("", xy=(6.2, 2.3), xytext=(7.3, 2.3), arrowprops=dict(arrowstyle="->", lw=1.2, color="#2B6CB0"))
+    ax.text(6.75, 2.0, "3. Trigger Fired\nST_Contains check", ha='center', fontsize=7)
+    plt.tight_layout()
+    plt.savefig(os.path.join(images_dir, "diag_rest_flow.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    print("All 9 vector diagrams generated successfully!")
+
 def main():
-    # Find workspace root path dynamically
     workspace_root = r"c:\Users\ASUS\DRDO Project\Defence-Asset-Tracking-Geofencing-System"
     print(f"Workspace root: {workspace_root}")
     
-    # Generate the vector diagrams
     generate_vector_diagrams(os.path.join(workspace_root, "docs", "images"))
     
     doc = Document()
@@ -297,7 +324,6 @@ def main():
         section.left_margin = Inches(1.0)
         section.right_margin = Inches(1.0)
         
-        # Configure different first page for headers/footers
         section.different_first_page_header_footer = True
         
         # Configure default headers & footers
@@ -317,7 +343,6 @@ def main():
         frun.font.size = Pt(9)
         frun.font.color.rgb = RGBColor(128, 128, 128)
         
-        # Insert Page field using complex field XML code
         fldSimple = OxmlElement('w:fldSimple')
         fldSimple.set(qn('w:instr'), 'PAGE')
         fp._p.append(fldSimple)
@@ -325,40 +350,33 @@ def main():
     # ==========================================
     # COVER PAGE
     # ==========================================
-    p = add_paragraph_with_spacing(doc, before=36, after=12, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "A PROJECT REPORT ON", before=36, after=12, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "A PROJECT REPORT ON"
     run.bold = True
     run.font.size = Pt(14)
     
-    p = add_paragraph_with_spacing(doc, before=12, after=24, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "DEFENCE ASSET TRACKING & GEOFENCING SYSTEM", before=12, after=24, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "DEFENCE ASSET TRACKING & GEOFENCING SYSTEM"
     run.bold = True
     run.font.size = Pt(22)
-    run.font.color.rgb = RGBColor(26, 54, 93) # Dark Navy Branding
+    run.font.color.rgb = RGBColor(26, 54, 93)
     
-    p = add_paragraph_with_spacing(doc, before=6, after=24, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "Real-Time Telemetry Tracking, Geographic Perimeter Security, and Alerts Ingestion using PostGIS & GeoServer Integration", before=6, after=24, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "Real-Time Telemetry Tracking, Geographic Perimeter Security, and Alerts Ingestion using PostGIS & GeoServer Integration"
     run.italic = True
     run.font.size = Pt(12)
     
-    p = add_paragraph_with_spacing(doc, before=24, after=12, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "Submitted in partial fulfillment of the requirements for the award of", before=24, after=12, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "Submitted in partial fulfillment of the requirements for the award of"
     run.font.size = Pt(11)
     
-    p = add_paragraph_with_spacing(doc, before=6, after=36, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "INTERNSHIP COMPLETION CERTIFICATE", before=6, after=36, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "INTERNSHIP COMPLETION CERTIFICATE"
     run.bold = True
     run.font.size = Pt(13)
     
-    # Students details
-    p = add_paragraph_with_spacing(doc, before=24, after=6, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "Developed during the DRDO Internship Program (May – July 2026)\nBy a Collaborative Student Internship Team:", before=24, after=6, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "Developed during the DRDO Internship Program (May – July 2026)\nBy a Collaborative Student Internship Team:"
     run.bold = True
     run.font.size = Pt(12)
     
@@ -374,25 +392,21 @@ def main():
         "Kulwant Singh Rathore (2nd Year, ECC)"
     ]
     for member in team_members:
-        p = add_paragraph_with_spacing(doc, before=0, after=2, align=WD_ALIGN_PARAGRAPH.CENTER)
+        p = add_paragraph_with_spacing(doc, f"• {member}", before=0, after=2, align=WD_ALIGN_PARAGRAPH.CENTER)
         run = p.runs[0]
-        run.text = f"• {member}"
         run.font.size = Pt(11)
         
-    p = add_paragraph_with_spacing(doc, before=36, after=6, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "Under the Guidance of:", before=36, after=6, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "Under the Guidance of:"
     run.font.size = Pt(11)
     
-    p = add_paragraph_with_spacing(doc, before=0, after=36, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "Shri Shyam Lal\nScientist 'F' / Internship Mentor\nDefence Laboratory Jodhpur (DLJ)", before=0, after=36, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "Shri Shyam Lal\nScientist 'F' / Internship Mentor\nDefence Laboratory Jodhpur (DLJ)"
     run.bold = True
     run.font.size = Pt(12)
     
-    p = add_paragraph_with_spacing(doc, before=24, after=0, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "DEFENCE LABORATORY JODHPUR (DLJ)\nDEFENCE RESEARCH & DEVELOPMENT ORGANISATION (DRDO)\nMINISTRY OF DEFENCE, GOVERNMENT OF INDIA\nJODHPUR, RAJASTHAN – 342011", before=24, after=0, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "DEFENCE LABORATORY JODHPUR (DLJ)\nDEFENCE RESEARCH & DEVELOPMENT ORGANISATION (DRDO)\nMINISTRY OF DEFENCE, GOVERNMENT OF INDIA\nJODHPUR, RAJASTHAN – 342011"
     run.bold = True
     run.font.size = Pt(12)
     
@@ -402,15 +416,13 @@ def main():
     # CERTIFICATE
     # ==========================================
     add_heading_with_spacing(doc, "DEFENCE LABORATORY JODHPUR (DLJ)", 1, before=24, after=12)
-    p = add_paragraph_with_spacing(doc, before=12, after=12)
+    p = add_paragraph_with_spacing(doc, "DEFENCE RESEARCH & DEVELOPMENT ORGANISATION (DRDO)\nJODHPUR, RAJASTHAN", before=12, after=12)
     run = p.runs[0]
-    run.text = "DEFENCE RESEARCH & DEVELOPMENT ORGANISATION (DRDO)\nJODHPUR, RAJASTHAN"
     run.bold = True
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
-    p = add_paragraph_with_spacing(doc, before=36, after=18, align=WD_ALIGN_PARAGRAPH.CENTER)
+    p = add_paragraph_with_spacing(doc, "CERTIFICATE OF ORIGINALITY", before=36, after=18, align=WD_ALIGN_PARAGRAPH.CENTER)
     run = p.runs[0]
-    run.text = "CERTIFICATE OF ORIGINALITY"
     run.bold = True
     run.font.size = Pt(14)
     
@@ -523,78 +535,76 @@ def main():
         ("Abbreviations", "vii"),
         ("Chapter 1: Introduction", "1"),
         ("   1.1 Organization Profile: DRDO & DLJ", "1"),
-        ("   1.2 Internship Overview", "2"),
-        ("   1.3 Problem Statement", "3"),
-        ("   1.4 Proposed System Solution", "4"),
-        ("   1.5 Project Scope and Objectives", "6"),
-        ("Chapter 2: Literature Survey", "8"),
-        ("   2.1 Geographic Information Systems (GIS)", "8"),
-        ("   2.2 OGC Mapping Web Services (WMS/WFS)", "9"),
-        ("   2.3 Relational Spatial Databases & PostGIS", "11"),
-        ("   2.4 Geofencing Algorithms & Topologies", "13"),
-        ("Chapter 3: Requirement Analysis", "16"),
-        ("   3.1 Functional Requirements", "16"),
-        ("   3.2 Non-Functional Requirements", "18"),
-        ("   3.3 Hardware Specifications", "19"),
-        ("   3.4 Software Runtime Environment", "21"),
-        ("Chapter 4: System Design", "24"),
-        ("   4.1 Architecture Framework (Three-Tier)", "24"),
-        ("   4.2 Database Design & Schemas", "26"),
-        ("   4.3 Dynamic Sequence Workflows", "28"),
-        ("   4.4 Deployment Topology (Docker Orchestration)", "30"),
-        ("Chapter 5: Technology Stack", "33"),
-        ("   5.1 Java & Servlet API", "33"),
-        ("   5.2 Leaflet JS Mapping Client", "34"),
-        ("   5.3 PostgreSQL & PostGIS Integration", "36"),
-        ("   5.4 GeoServer Rendering Engine", "38"),
-        ("   5.5 Apache Tomcat & Maven Build System", "40"),
-        ("Chapter 6: Project Implementation", "43"),
-        ("   6.1 Security & Session Authorization Filters", "43"),
-        ("   6.2 Real-Time Asset Tracking Loop", "45"),
-        ("   6.3 Stored Database Functions & Alert Triggers", "47"),
-        ("   6.4 Analytical Reports Compilation", "49"),
-        ("Chapter 7: Database Architecture", "52"),
-        ("   7.1 Schema Definitions & Data Dictionary", "52"),
-        ("   7.2 Database Table DDL Scripts", "54"),
-        ("   7.3 Topological Queries & Spatial Triggers", "56"),
-        ("Chapter 8: Docker Containerization", "59"),
-        ("   8.1 Multi-Stage Maven-to-Tomcat Dockerfile", "59"),
-        ("   8.2 Docker Compose Stack Configuration", "61"),
-        ("   8.3 GeoServer Setup Orchestration Sidecar", "63"),
-        ("Chapter 9: Verification & Testing", "66"),
-        ("   9.1 Stored Logic Verification", "66"),
-        ("   9.2 API Request/Response Integration Logs", "67"),
-        ("   9.3 Docker Deployment Logs", "69"),
-        ("Chapter 10: Results & Advantages", "72"),
-        ("   10.1 UI Layout Showcase & Performance Checks", "72"),
-        ("   10.2 Advantages & Defence Applications", "74"),
-        ("Chapter 11: Future Enhancements", "77"),
-        ("Chapter 12: Conclusion", "79"),
-        ("Appendix", "81"),
-        ("   Appendix A: Folder Structure Map", "81"),
-        ("   Appendix B: REST API References", "82"),
-        ("   Appendix C: Docker Setup Guidelines", "84"),
-        ("   Appendix D: Stored PL/pgSQL Code", "86"),
-        ("References", "89")
+        ("   1.2 DLJ Technical Divisions & Camouflage", "2"),
+        ("   1.3 Internship Scope Overview", "3"),
+        ("   1.4 Technical Problem Statement", "4"),
+        ("   1.5 Proposed Spatial Intelligence Solution", "5"),
+        ("   1.6 Specific Project Objectives", "7"),
+        ("Chapter 2: Literature Survey", "9"),
+        ("   2.1 Geographic Information Systems (GIS) Evolution", "9"),
+        ("   2.2 OGC Specifications & WMS/WFS Services", "11"),
+        ("   2.3 Spatial Databasing Mechanics: PostGIS", "13"),
+        ("   2.4 Geofencing containment: Ray-Casting Logic", "15"),
+        ("Chapter 3: Requirement Analysis", "18"),
+        ("   3.1 Detailed Functional Modules Specifications", "18"),
+        ("   3.2 Technical Non-Functional Standards", "20"),
+        ("   3.3 Target Hardware Resource Specifications", "22"),
+        ("   3.4 Software Runtimes Configuration Matrix", "24"),
+        ("Chapter 4: System Design & Architecture", "27"),
+        ("   4.1 Architecture Frame (Three-Tier Decoupling)", "27"),
+        ("   4.2 UML Use Case System Interfacing Model", "29"),
+        ("   4.3 Database Schema & Data Dictionary DDL", "31"),
+        ("   4.4 Process Flows & Activity Diagrams", "33"),
+        ("   4.5 Telemetry Sequence Lifelines Execution", "35"),
+        ("   4.6 Deployment Topology & Container Network", "37"),
+        ("Chapter 5: Detailed Technology Stack", "40"),
+        ("   5.1 Java 17 LTS Backend & Servlet API Engine", "40"),
+        ("   5.2 Leaflet Map Interface Rendering Framework", "42"),
+        ("   5.3 PostgreSQL Database & PostGIS Extensions", "44"),
+        ("   5.4 GeoServer GIS Map Publishing Engine", "46"),
+        ("   5.5 Apache Tomcat Server & Maven Build Tool", "48"),
+        ("Chapter 6: Project Implementation", "51"),
+        ("   6.1 Security Gateways & BCrypt Hash Filters", "51"),
+        ("   6.2 Real-Time Asset Tracking Loop", "53"),
+        ("   6.3 Stored Database Functions & Alert Triggers", "55"),
+        ("   6.4 Analytical Reports Compilation", "57"),
+        ("Chapter 7: Database Architecture", "60"),
+        ("   7.1 Schema Definitions & Data Dictionary", "60"),
+        ("   7.2 Database Table DDL Scripts", "62"),
+        ("   7.3 Topological Queries & Spatial Triggers", "64"),
+        ("Chapter 8: Docker Containerization", "67"),
+        ("   8.1 Multi-Stage Maven-to-Tomcat Dockerfile", "67"),
+        ("   8.2 Docker Compose Stack Configuration", "69"),
+        ("   8.3 GeoServer Setup Orchestration Sidecar", "71"),
+        ("Chapter 9: Verification & Testing", "74"),
+        ("   9.1 Stored Logic Verification", "74"),
+        ("   9.2 API Request/Response Integration Logs", "75"),
+        ("   9.3 Docker Deployment Logs", "77"),
+        ("Chapter 10: Results & Advantages", "80"),
+        ("   10.1 UI Layout Showcase & Performance Checks", "80"),
+        ("   10.2 Advantages & Defence Applications", "82"),
+        ("Chapter 11: Future Enhancements", "85"),
+        ("Chapter 12: Conclusion", "87"),
+        ("Appendix", "89"),
+        ("   Appendix A: Folder Structure Map", "89"),
+        ("   Appendix B: REST API References", "90"),
+        ("   Appendix C: Docker Setup Guidelines", "92"),
+        ("   Appendix D: Stored PL/pgSQL Code", "94"),
+        ("References", "97")
     ]
     
-    # Render table of contents nicely using tabs and right-aligned pages
     for name, page in toc_items:
         p = doc.add_paragraph()
         p.paragraph_format.space_before = Pt(0)
         p.paragraph_format.space_after = Pt(2)
         p.paragraph_format.line_spacing = 1.15
-        
-        # Add tab stops for neat layout
         tab_stops = p.paragraph_format.tab_stops
-        tab_stops.add_tab_stop(Inches(6.0), alignment=2, leader=1) # Tab leader dots
-        
+        tab_stops.add_tab_stop(Inches(6.0), alignment=2, leader=1)
         run_name = p.add_run(name)
         run_name.font.name = 'Times New Roman'
         run_name.font.size = Pt(11)
         if "Chapter" in name or name in ["Certificate of Originality", "Student Declaration", "Acknowledgement", "Abstract", "Abbreviations", "TABLE OF CONTENTS", "References", "Appendix"]:
             run_name.bold = True
-            
         p.add_run(f"\t{page}")
         
     doc.add_page_break()
@@ -603,7 +613,6 @@ def main():
     # ABBREVIATIONS
     # ==========================================
     add_heading_with_spacing(doc, "ABBREVIATIONS", 1, before=24, after=12)
-    
     abbreviations = [
         ("DRDO", "Defence Research and Development Organisation"),
         ("DLJ", "Defence Laboratory Jodhpur"),
@@ -634,8 +643,6 @@ def main():
     table = doc.add_table(rows=1, cols=2)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     table.style = 'Light Shading Accent 1'
-    
-    # Headers
     hdr_cells = table.rows[0].cells
     hdr_cells[0].text = 'Abbreviation'
     hdr_cells[1].text = 'Description / Full Form'
@@ -682,7 +689,22 @@ def main():
         "web containers to support telemetry-tracking loggers."
     )
     
-    add_heading_with_spacing(doc, "1.2 Internship Overview", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "1.2 DLJ Technical Divisions & Camouflage", 2, before=12, after=6)
+    p = add_paragraph_with_spacing(doc)
+    p.runs[0].text = (
+        "Defence Laboratory Jodhpur (DLJ) is structured into several specialized divisions that focus on specific "
+        "areas of strategic significance. These divisions collaborate to translate basic research into advanced systems "
+        "for the Indian Armed Forces:\n"
+        "• **Camouflage Division**: Focuses on design and development of multispectral camouflage materials and technologies "
+        "for signature management of ground-based vehicles, bunkers, and aircraft systems. It works to reduce thermal, radar, "
+        "and visual signatures of combat assets.\n"
+        "• **Nuclear Radiation Management and Application (NRMA)**: Conducts research on advanced radiation detectors, dosimeters, "
+        "dose rate meters, and area monitoring sensors, providing calibrated tracking systems traceable to national bodies (NABL/BARC).\n"
+        "• **Desert Environment Science and Technology (DEST)**: Specialized in studying water stabilization, soil compaction, "
+        "terrain analysis, and heat management technologies to support logistics and troop operations under harsh desert environments."
+    )
+    
+    add_heading_with_spacing(doc, "1.3 Internship Scope Overview", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "The collaborative internship project was conducted over an intensive ten-week timeline (May – July 2026) at "
@@ -695,7 +717,7 @@ def main():
         "to deliver a secure Command-and-Control monitoring panel."
     )
     
-    add_heading_with_spacing(doc, "1.3 Problem Statement", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "1.4 Technical Problem Statement", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "Modern military logistics and perimeter protection depend heavily on real-time awareness of asset coordinates. "
@@ -707,7 +729,7 @@ def main():
         "and display the live status on an interactive tactical map without resource starvation."
     )
     
-    add_heading_with_spacing(doc, "1.4 Proposed System Solution", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "1.5 Proposed Spatial Intelligence Solution", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "The proposed \"Defence Asset Tracking & Geofencing System\" addresses these challenges by introducing a "
@@ -720,7 +742,7 @@ def main():
         "stack (Tomcat, Postgres/PostGIS, GeoServer) configured automatically via a REST configuration sidecar."
     )
     
-    add_heading_with_spacing(doc, "1.5 Project Scope and Objectives", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "1.6 Specific Project Objectives", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "The scope of the project spans development, deployment automation, and functional testing. The detailed technical "
@@ -745,7 +767,7 @@ def main():
     # ==========================================
     add_heading_with_spacing(doc, "CHAPTER 2: LITERATURE SURVEY", 1, before=24, after=12)
     
-    add_heading_with_spacing(doc, "2.1 Geographic Information Systems (GIS)", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "2.1 Geographic Information Systems (GIS) Evolution", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "Geographic Information Systems (GIS) represent a framework to gather, manage, analyze, and display spatial data. "
@@ -755,7 +777,7 @@ def main():
         "which are crucial for tracking military assets (represented as points) and border fences (represented as polygons)."
     )
     
-    add_heading_with_spacing(doc, "2.2 OGC Mapping Web Services (WMS/WFS)", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "2.2 OGC Specifications & WMS/WFS Services", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "OGC mapping services enable standard clients to request spatial data over web protocols. Web Map Service (WMS) "
@@ -766,7 +788,7 @@ def main():
         "moving markers) provides the optimal balance of speed and bandwidth usage."
     )
     
-    add_heading_with_spacing(doc, "2.3 Relational Spatial Databases & PostGIS", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "2.3 Spatial Databasing Mechanics: PostGIS", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "Relational databases are structured for standard text and numerical fields but lack native support for coordinate geometry "
@@ -777,7 +799,7 @@ def main():
         "telemetry rows in real-time."
     )
     
-    add_heading_with_spacing(doc, "2.4 Geofencing Algorithms & Topologies", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "2.4 Geofencing containment: Ray-Casting Logic", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "Geofencing is the process of setting up virtual perimeter boundaries around defined areas and monitoring when a moving "
@@ -795,24 +817,24 @@ def main():
     # ==========================================
     add_heading_with_spacing(doc, "CHAPTER 3: REQUIREMENT ANALYSIS", 1, before=24, after=12)
     
-    add_heading_with_spacing(doc, "3.1 Functional Requirements", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "3.1 Detailed Functional Modules Specifications", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "Functional requirements define the core capabilities the system must perform:"
     )
     fr_items = [
-        "**Asset Telemetry Logging**: System must record incoming GPS coordinates, speed, heading, and altitude for 15+ assets.",
-        "**Geofencing Analysis**: Automatically compute containment on every position update. Identify breaches of restricted zones.",
-        "**Real-time Alerts Feed**: Log alerts (ENTER, EXIT, SOS, SPEED, OFFLINE) with severity (CRITICAL, HIGH, MEDIUM, LOW) and support operator acknowledgement.",
-        "**Tactical Map Visualizer**: Render live positions, geofences, and paths using Leaflet overlays and WMS tiles.",
-        "**Report Compilation**: Generate customized search summaries filtering positions, alerts, and user audit logs.",
-        "**User Session Guarding**: Validate credentials (drdo, admin, mahendra) and enforce authorization filters on all '/api/*' routes."
+        "**Asset Telemetry Ingestion**: The system must expose endpoint `/api/positions` to parse and store incoming GPS packets, including speed, altitude, and heading.",
+        "**Real-time Geofence Boundary Check**: The system must run spatial ST_Contains queries automatically when coordinates are written to the database.",
+        "**Alert Dispatching Engine**: Alarm rows must be populated inside the `alerts` table on breaches (ENTER, EXIT, SOS). It must support severity markings.",
+        "**GIS Vector Layer Rendering**: Map clients must pull pre-rendered WMS tiles from GeoServer displaying active asset paths.",
+        "**Historical Track Assembly**: A custom SQL query must build LineString histories from coordinates, allowing path playback.",
+        "**Security & Credentials Manager**: Session-validation filter controls access routes under `/api/*` context paths."
     ]
     for item in fr_items:
         p = add_paragraph_with_spacing(doc, before=0, after=4)
         p.add_run(f"  • {item}")
         
-    add_heading_with_spacing(doc, "3.2 Non-Functional Requirements", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "3.2 Technical Non-Functional Standards", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "Non-functional requirements describe constraints on system behavior and operations:"
@@ -828,7 +850,7 @@ def main():
         p = add_paragraph_with_spacing(doc, before=0, after=4)
         p.add_run(f"  • {item}")
         
-    add_heading_with_spacing(doc, "3.3 Hardware Specifications", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "3.3 Target Hardware Resource Specifications", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = "Minimum hardware configurations required to host and run the containerized system:"
     
@@ -862,7 +884,7 @@ def main():
             cell.paragraphs[0].runs[0].font.size = Pt(11)
             set_cell_margins(cell, top=80, bottom=80, left=150, right=150)
 
-    add_heading_with_spacing(doc, "3.4 Software Runtime Environment", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "3.4 Software Runtimes Configuration Matrix", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "The software architecture runs completely containerized to avoid runtime conflicts. The container specifications are:"
@@ -879,11 +901,11 @@ def main():
     doc.add_page_break()
 
     # ==========================================
-    # CHAPTER 4: SYSTEM DESIGN
+    # CHAPTER 4: SYSTEM DESIGN & ARCHITECTURE
     # ==========================================
-    add_heading_with_spacing(doc, "CHAPTER 4: SYSTEM DESIGN", 1, before=24, after=12)
+    add_heading_with_spacing(doc, "CHAPTER 4: SYSTEM DESIGN & ARCHITECTURE", 1, before=24, after=12)
     
-    add_heading_with_spacing(doc, "4.1 Architecture Framework (Three-Tier)", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "4.1 Architecture Frame (Three-Tier Decoupling)", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "The system employs a classic three-tier architecture to decouple presentations, control logic, and geographic "
@@ -910,7 +932,22 @@ def main():
         p.runs[0].text = "Figure 4.1 illustrates the three distinct layers of the system, showcasing the decoupling of the client web-canvas from the Java Servlet application backend and spatial database. Each layer communicates over standardized TCP network ports."
         p.runs[0].italic = True
 
-    add_heading_with_spacing(doc, "4.2 Database Design & Schemas", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "4.2 UML Use Case System Interfacing Model", 2, before=12, after=6)
+    p = add_paragraph_with_spacing(doc)
+    p.runs[0].text = (
+        "The UML Use Case Diagram isolates interactions between system actors (Field Asset, Command Operator, GIS Administrator) "
+        "and internal system features. This models the user permissions boundaries for each login role."
+    )
+    img_use = os.path.join(workspace_root, "docs", "images", "diag_use_case.png")
+    if os.path.exists(img_use):
+        doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
+        doc.paragraphs[-1].add_run().add_picture(img_use, width=Inches(6.0))
+        add_caption(doc, "Figure 4.2", "UML Use Case Interfacing Diagram")
+        p = add_paragraph_with_spacing(doc)
+        p.runs[0].text = "Figure 4.2 represents how different system actors trigger use cases. The field asset pushes GPS data, the command operator monitors alerts and tracks, and the GIS administrator publishes vector styles."
+        p.runs[0].italic = True
+
+    add_heading_with_spacing(doc, "4.3 Database Schema & Data Dictionary DDL", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "The schema isolates operational entities into structured tables. The primary database ER diagram file "
@@ -935,12 +972,27 @@ def main():
     if os.path.exists(erd_path):
         doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
         doc.paragraphs[-1].add_run().add_picture(erd_path, width=Inches(6.0))
-        add_caption(doc, "Figure 4.6", "Entity Relationship Diagram (ERD) of Defence GIS database")
+        add_caption(doc, "Figure 4.3", "Entity Relationship Diagram (ERD) of Defence GIS database")
         p = add_paragraph_with_spacing(doc)
-        p.runs[0].text = "Figure 4.6 provides a complete database data-dictionary schema mapping all primary key, foreign key linkages, data types, and index locations."
+        p.runs[0].text = "Figure 4.3 provides a complete database data-dictionary schema mapping all primary key, foreign key linkages, data types, and index locations."
         p.runs[0].italic = True
 
-    add_heading_with_spacing(doc, "4.3 Dynamic Sequence Workflows", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "4.4 Process Flows & Activity Diagrams", 2, before=12, after=6)
+    p = add_paragraph_with_spacing(doc)
+    p.runs[0].text = (
+        "The Activity Diagram maps operational workflows executed by the dashboard operator during a tactical surveillance "
+        "session, showing session validation, polling triggers, and reports generation."
+    )
+    img_act = os.path.join(workspace_root, "docs", "images", "diag_activity.png")
+    if os.path.exists(img_act):
+        doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
+        doc.paragraphs[-1].add_run().add_picture(img_act, width=Inches(5.5))
+        add_caption(doc, "Figure 4.4", "Operator Dashboard Activities Workflow Flowchart")
+        p = add_paragraph_with_spacing(doc)
+        p.runs[0].text = "Figure 4.4 describes activities starting from credentials authentication, loop map updates, alerts acknowledgement, to historical data export."
+        p.runs[0].italic = True
+
+    add_heading_with_spacing(doc, "4.5 Telemetry Sequence Lifelines Execution", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "The runtime sequence executes automatically on coordinate ingestion:"
@@ -961,21 +1013,21 @@ def main():
     if os.path.exists(img_work):
         doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
         doc.paragraphs[-1].add_run().add_picture(img_work, width=Inches(5.5))
-        add_caption(doc, "Figure 4.3", "Telemetry Ingestion, Spatial Analysis, and Alerts Workflow Diagram")
+        add_caption(doc, "Figure 4.5", "Telemetry Ingestion, Spatial Analysis, and Alerts Workflow Diagram")
         p = add_paragraph_with_spacing(doc)
-        p.runs[0].text = "Figure 4.3 outlines the structural logical steps from coordinates telemetry ingress to geofence containment checks and alarms dispatch."
+        p.runs[0].text = "Figure 4.5 outlines the structural logical steps from coordinates telemetry ingress to geofence containment checks and alarms dispatch."
         p.runs[0].italic = True
 
     img_seq = os.path.join(workspace_root, "docs", "images", "diag_sequence.png")
     if os.path.exists(img_seq):
         doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
         doc.paragraphs[-1].add_run().add_picture(img_seq, width=Inches(5.5))
-        add_caption(doc, "Figure 4.4", "Ingestion & Breach Detection Sequence Diagram")
+        add_caption(doc, "Figure 4.6", "Ingestion & Breach Detection Sequence Diagram")
         p = add_paragraph_with_spacing(doc)
-        p.runs[0].text = "Figure 4.4 shows the timeline call sequences between the external asset transceiver, servlet container, database trigger, and frontend GUI panel."
+        p.runs[0].text = "Figure 4.6 shows the timeline call sequences between the external asset transceiver, servlet container, database trigger, and frontend GUI panel."
         p.runs[0].italic = True
 
-    add_heading_with_spacing(doc, "4.4 Deployment Topology (Docker Orchestration)", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "4.4 Deployment Topology & Container Network", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "The system deployment decouples containers, persistent volumes, and custom setups. In this 3-tier container stack, "
@@ -988,35 +1040,33 @@ def main():
     if os.path.exists(img_docker):
         doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
         doc.paragraphs[-1].add_run().add_picture(img_docker, width=Inches(6.0))
-        add_caption(doc, "Figure 4.2", "Dockerized Multi-Container Network & Volumes Topology Diagram")
+        add_caption(doc, "Figure 4.7", "Dockerized Multi-Container Network & Volumes Topology Diagram")
         p = add_paragraph_with_spacing(doc)
-        p.runs[0].text = "Figure 4.2 highlights container mappings inside the private bridge network, indicating volume data storage and mapping setups sidecar ports."
+        p.runs[0].text = "Figure 4.7 highlights container mappings inside the private bridge network, indicating volume data storage and mapping setups sidecar ports."
         p.runs[0].italic = True
 
     img_deploy = os.path.join(workspace_root, "docs", "images", "diag_deployment.png")
     if os.path.exists(img_deploy):
         doc.add_paragraph().alignment = WD_ALIGN_PARAGRAPH.CENTER
         doc.paragraphs[-1].add_run().add_picture(img_deploy, width=Inches(6.0))
-        add_caption(doc, "Figure 4.5", "Enterprise Deployment Topology with Port Mappings")
+        add_caption(doc, "Figure 4.8", "Enterprise Deployment Topology with Port Mappings")
         p = add_paragraph_with_spacing(doc)
-        p.runs[0].text = "Figure 4.5 describes server execution environments mapping host virtual ports to individual containers."
+        p.runs[0].text = "Figure 4.8 describes server execution environments mapping host virtual ports to individual containers."
         p.runs[0].italic = True
-    
+        
     doc.add_page_break()
 
     # ==========================================
-    # CHAPTER 5: TECHNOLOGY STACK
+    # CHAPTER 5: DETAILED TECHNOLOGY STACK
     # ==========================================
-    add_heading_with_spacing(doc, "CHAPTER 5: TECHNOLOGY STACK", 1, before=24, after=12)
+    add_heading_with_spacing(doc, "CHAPTER 5: DETAILED TECHNOLOGY STACK", 1, before=24, after=12)
     
     techs = [
-        ("Java 17 & Servlet API", "The core language runtime. The backend uses Java 17 LTS to write strongly-typed data structures. Servlets (version 4.0.1) handle HTTP requests directly without bloated Spring Boot dependencies, keeping Tomcat's memory footprint under 200MB."),
-        ("Leaflet.js Mapping Client", "A lightweight, open-source JavaScript library for interactive maps. Renders WMS layers from GeoServer, overlays GeoJSON markers, binds popup menus, and updates visual markers dynamically."),
-        ("PostgreSQL & PostGIS", "The spatial database engine. PostGIS extends PostgreSQL with geographic coordinate computations, enabling real-time topological SQL queries and R-tree geometric indices."),
-        ("GeoServer (Kartoza build)", "The GIS server. Connects to PostGIS database via JDBC, builds OGC mapping structures, and serves vector geometries as cached PNG images (via WMS) or raw features (via WFS) to the map client."),
-        ("Apache Tomcat 9", "The Java EE servlet web container. Hosts the compiled WAR package, handles session states, connection pooling, security filters, and dispatches API endpoints."),
-        ("Docker & Compose", "The infrastructure layer. Standardizes execution files across Linux and Windows. Automates dependencies setup (Java, Tomcat, DB, GIS) through isolated container processes on a virtual bridge network."),
-        ("Maven Build Tool", "The package manager. Standardizes compilation steps. Generates the single deployable WAR package incorporating both frontend files and Java bytecode classes.")
+        ("Java 17 LTS Backend & Servlet API Engine", "The core language runtime. The backend uses Java 17 LTS to write strongly-typed data structures. Servlets (version 4.0.1) handle HTTP requests directly without bloated Spring Boot dependencies, keeping Tomcat's memory footprint under 200MB."),
+        ("Leaflet Map Interface Rendering Framework", "A lightweight, open-source JavaScript library for interactive maps. Renders WMS layers from GeoServer, overlays GeoJSON markers, binds popup menus, and updates visual markers dynamically."),
+        ("PostgreSQL Database & PostGIS Extensions", "The spatial database engine. PostGIS extends PostgreSQL with geographic coordinate computations, enabling real-time topological SQL queries and R-tree geometric indices."),
+        ("GeoServer GIS Map Publishing Engine", "The GIS server. Connects to PostGIS database via JDBC, builds OGC mapping structures, and serves vector geometries as cached PNG images (via WMS) or raw features (via WFS) to the map client."),
+        ("Apache Tomcat Server & Maven Build Tool", "The Java EE servlet web container. Hosts the compiled WAR package, handles session states, connection pooling, security filters, and dispatches API endpoints.")
     ]
     for idx, (title, desc) in enumerate(techs):
         add_heading_with_spacing(doc, f"5.{idx+1} {title}", 2, before=12, after=6)
@@ -1030,7 +1080,7 @@ def main():
     # ==========================================
     add_heading_with_spacing(doc, "CHAPTER 6: PROJECT IMPLEMENTATION", 1, before=24, after=12)
     
-    add_heading_with_spacing(doc, "6.1 Security & Session Authorization Filters", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "6.1 Security Gateways & BCrypt Hash Filters", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "Security checks are enforced using a Java Web Filter (`AuthFilter.java`) guarding all `/api/*` endpoints except "
@@ -1059,7 +1109,7 @@ def main():
         "}"
     )
     
-    add_heading_with_spacing(doc, "6.2 Real-Time Asset Ingestion Loop", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "6.2 Real-Time Asset Tracking Loop", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "Telemetry ingestion executes via AJAX long-polling from the Leaflet client. Every 10 seconds, the mapping client "
@@ -1123,7 +1173,6 @@ def main():
     p.runs[0].text = (
         "The tables structure, primary keys, indexes, and reference constraints form the schema foundation:"
     )
-    
     p = add_paragraph_with_spacing(doc)
     p.add_run(
         "1. **users**: Primary key `id` SERIAL. Columns: `username` (UNIQUE), `password_hash`, `role`, `is_active`.\n"
@@ -1133,10 +1182,33 @@ def main():
         "5. **alerts**: Primary key `id` SERIAL. Foreign keys: `asset_id` references `assets(id)`, `zone_id` references `geofence_zones(id)`. Columns: `alert_type`, `severity`, `geom` (Point geometry), `acknowledged`."
     )
     
-    add_heading_with_spacing(doc, "7.2 Database Stored Procedures", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "7.2 Database Table DDL Scripts", 2, before=12, after=6)
+    p = add_paragraph_with_spacing(doc)
+    p.runs[0].text = "SQL DDL Schema definition code executing inside PostgreSQL container:"
+    add_code_block(doc,
+        "-- DDL script for asset tracking schema\n"
+        "CREATE EXTENSION IF NOT EXISTS postgis;\n\n"
+        "CREATE TABLE assets (\n"
+        "    id SERIAL PRIMARY KEY,\n"
+        "    asset_name VARCHAR(100) NOT NULL,\n"
+        "    asset_type VARCHAR(50) NOT NULL,\n"
+        "    asset_code VARCHAR(30) UNIQUE NOT NULL,\n"
+        "    status VARCHAR(20) DEFAULT 'ACTIVE'\n"
+        ");\n\n"
+        "CREATE TABLE asset_positions (\n"
+        "    id SERIAL PRIMARY KEY,\n"
+        "    asset_id INTEGER REFERENCES assets(id) ON DELETE CASCADE,\n"
+        "    geom GEOMETRY(Point, 4326) NOT NULL,\n"
+        "    speed DOUBLE PRECISION DEFAULT 0.0,\n"
+        "    heading DOUBLE PRECISION DEFAULT 0.0,\n"
+        "    recorded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP\n"
+        ");\n"
+        "CREATE INDEX idx_asset_positions_geom ON asset_positions USING GIST(geom);"
+    )
+    
+    add_heading_with_spacing(doc, "7.3 Topological Queries & Spatial Triggers", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = "PL/pgSQL Trigger checks for restricted perimeter boundaries:"
-    
     add_code_block(doc,
         "-- Auto-alert Trigger Function\n"
         "CREATE OR REPLACE FUNCTION trigger_geofence_check()\n"
@@ -1237,7 +1309,6 @@ def main():
         "The API endpoints were tested against session verification filters. Authentication tokens and profile details "
         "retrieved from login responses were validated for active access role permissions."
     )
-    
     add_code_block(doc,
         "// Ingestion Request/Response verification\n"
         "POST http://localhost:8080/DefenceGIS/api/auth/login\n"
@@ -1250,7 +1321,7 @@ def main():
         "}"
     )
 
-    add_heading_with_spacing(doc, "9.3 Docker Deployment Verification Logs", 2, before=12, after=6)
+    add_heading_with_spacing(doc, "9.3 Docker Deployment Logs", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = (
         "Docker compose logs were verified during container initializations. Database logs confirm schema and seed data "
@@ -1272,7 +1343,6 @@ def main():
         "The visual results of the interface are shown below:"
     )
     
-    # Explicitly add all screenshots with detailed descriptions
     screenshots = [
         ("geoserver_welcome.png", "GeoServer Administration Panel", "Welcome Page of GeoServer spatial application",
          "Figure 10.1 shows the web administration console of the GeoServer service running on host port 8085. The dashboard enables administrators to verify the system status, check memory allocations, and configure workspace namespaces."),
@@ -1358,7 +1428,6 @@ def main():
     add_heading_with_spacing(doc, "Appendix A: Folder Structure Map", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = "The directory structure map of the containerized repository:"
-    
     add_code_block(doc,
         "Defence-Asset-Tracking-Geofencing-System/\n"
         "├── .dockerignore\n"
@@ -1391,7 +1460,6 @@ def main():
     add_heading_with_spacing(doc, "Appendix B: REST API References", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = "The backend exposes endpoints under the `/api/*` context path:"
-    
     api_list = [
         ("POST", "/api/auth/login", "Authenticate users. Returns session payload."),
         ("POST", "/api/auth/logout", "Logs out active session, destroying credentials."),
@@ -1409,7 +1477,6 @@ def main():
     add_heading_with_spacing(doc, "Appendix C: Docker Setup Guidelines", 2, before=12, after=6)
     p = add_paragraph_with_spacing(doc)
     p.runs[0].text = "Standard commands to control the containerized environment:"
-    
     add_code_block(doc,
         "# Build and start all services in background\n"
         "docker compose up -d --build\n\n"
@@ -1429,7 +1496,6 @@ def main():
     # REFERENCES
     # ==========================================
     add_heading_with_spacing(doc, "REFERENCES", 1, before=24, after=12)
-    
     references = [
         "[1] Open Geospatial Consortium, \"OGC Web Map Service (WMS) Implementation Specification,\" Version 1.3.0, OGC Document 06-042, 2006.",
         "[2] Open Geospatial Consortium, \"OGC Web Feature Service (WFS) Implementation Specification,\" Version 2.0.0, OGC Document 09-025r2, 2010.",
@@ -1444,7 +1510,6 @@ def main():
         p = add_paragraph_with_spacing(doc, before=0, after=4, line_spacing=1.15, align=WD_ALIGN_PARAGRAPH.LEFT)
         p.runs[0].text = ref
 
-    # Save Document in workspace root directly
     output_docx = os.path.join(workspace_root, "DRDO_Internship_Report.docx")
     doc.save(output_docx)
     print(f"Report DOCX successfully generated at: {output_docx}")

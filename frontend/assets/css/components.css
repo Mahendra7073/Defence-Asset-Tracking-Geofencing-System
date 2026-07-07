@@ -100,11 +100,12 @@
     border: 1px solid var(--color-card-border);
     border-radius: var(--radius-lg);
     padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
     transition: all var(--transition-normal);
 }
 
 .card:hover {
-    border-color: rgba(0, 212, 255, 0.25);
+    border-color: rgba(0, 184, 217, 0.25);
     box-shadow: var(--shadow-md);
 }
 
@@ -133,8 +134,9 @@
     border-radius: var(--radius-lg);
     padding: var(--space-lg);
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--space-md);
+    box-shadow: var(--shadow-sm);
     transition: all var(--transition-normal);
     position: relative;
     overflow: hidden;
@@ -153,6 +155,7 @@
 
 .stat-card:hover {
     transform: translateY(-2px);
+    border-color: rgba(0, 184, 217, 0.25);
     box-shadow: var(--shadow-md);
 }
 
@@ -265,12 +268,13 @@
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-base);
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .form-input:focus {
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px var(--color-accent-glow);
+    box-shadow: 0 0 0 3px rgba(0, 184, 217, 0.25);
+    outline: none;
 }
 
 .form-input::placeholder {
@@ -285,9 +289,15 @@
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-base);
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     appearance: none;
     cursor: pointer;
+}
+
+.form-select:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(0, 184, 217, 0.25);
+    outline: none;
 }
 
 /* ---------- Tables ---------- */
@@ -326,30 +336,36 @@
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 2px 10px;
+    padding: 3px 8px;
     border-radius: var(--radius-full);
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .badge-success {
-    background: rgba(0, 230, 118, 0.15);
+    background: rgba(0, 230, 118, 0.12);
     color: var(--color-success);
+    border: 1px solid rgba(0, 230, 118, 0.25);
 }
 
 .badge-danger {
-    background: rgba(255, 82, 82, 0.15);
+    background: rgba(255, 82, 82, 0.12);
     color: var(--color-danger);
+    border: 1px solid rgba(255, 82, 82, 0.25);
 }
 
 .badge-warning {
-    background: rgba(255, 171, 64, 0.15);
+    background: rgba(255, 171, 64, 0.12);
     color: var(--color-warning);
+    border: 1px solid rgba(255, 171, 64, 0.25);
 }
 
 .badge-info {
-    background: rgba(68, 138, 255, 0.15);
+    background: rgba(68, 138, 255, 0.12);
     color: var(--color-info);
+    border: 1px solid rgba(68, 138, 255, 0.25);
 }
 
 /* ---------- Map Container ---------- */
@@ -465,12 +481,12 @@
     bottom: var(--space-lg);
     right: var(--space-lg);
     width: 340px;
-    background: rgba(10, 22, 40, 0.85);
+    background: rgba(22, 35, 58, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--color-card-border);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg), 0 0 20px rgba(0, 212, 255, 0.1);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(0, 184, 217, 0.1);
     z-index: 1000;
     transition: transform var(--transition-normal), opacity var(--transition-normal);
     pointer-events: auto;
@@ -488,7 +504,7 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--space-md) var(--space-lg);
-    background: rgba(19, 34, 64, 0.5);
+    background: rgba(22, 35, 58, 0.95);
     border-bottom: 1px solid var(--color-card-border);
 }
 
@@ -536,16 +552,22 @@
 
 /* ---------- Custom GIS Controls Styling ---------- */
 .mouse-position-control {
-    background: rgba(10, 22, 40, 0.8) !important;
+    background: rgba(22, 35, 58, 0.85) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-color: var(--color-card-border) !important;
+    border-radius: var(--radius-sm) !important;
     color: var(--color-text-secondary) !important;
     font-family: var(--font-mono);
     box-shadow: var(--shadow-sm) !important;
 }
 
 .compass-control {
-    background: rgba(10, 22, 40, 0.8) !important;
+    background: rgba(22, 35, 58, 0.85) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-color: var(--color-card-border) !important;
+    border-radius: var(--radius-sm) !important;
     box-shadow: var(--shadow-sm) !important;
     transition: transform var(--transition-fast);
 }
@@ -578,8 +600,8 @@
 }
 
 .btn-playback:focus {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 184, 217, 0.35);
 }
 
 .btn-playback:hover:not(:disabled) {
@@ -647,4 +669,22 @@
 }
 .btn-playback-danger:hover:not(:disabled) {
     background: var(--color-danger-hover);
+}
+
+/* ---------- Sidebar Asset Search List Items (Live Tracking) ---------- */
+.asset-item {
+    padding: var(--space-md);
+    border-bottom: 1px solid rgba(42, 60, 87, 0.4);
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+    border-left: 3px solid transparent;
+}
+
+.asset-item:hover {
+    background: var(--color-surface-hover);
+}
+
+.asset-item.active {
+    background: var(--color-accent-glow);
+    border-left-color: var(--color-accent);
 }

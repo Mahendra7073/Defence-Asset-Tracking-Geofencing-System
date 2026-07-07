@@ -5,26 +5,32 @@
 
 :root {
     /* ---------- Color Palette ---------- */
-    --color-primary:        #0a1628;
-    --color-primary-light:  #132240;
-    --color-primary-dark:   #060f1d;
-    --color-accent:         #00d4ff;
-    --color-accent-dim:     #0098b8;
-    --color-accent-glow:    rgba(0, 212, 255, 0.15);
+    --color-primary:        #0B1220;
+    --color-primary-light:  #16233A;
+    --color-primary-dark:   #060a12;
+    --color-accent:         #00B8D9;
+    --color-accent-dim:     #0090A8;
+    --color-accent-glow:    rgba(0, 184, 217, 0.15);
 
-    --color-success:        #00e676;
-    --color-warning:        #ffab40;
-    --color-danger:         #ff5252;
-    --color-info:           #448aff;
+    --color-success:        #22C55E;
+    --color-warning:        #F59E0B;
+    --color-danger:         #EF4444;
+    --color-info:           #00B8D9;
 
-    --color-surface:        #0f1e36;
-    --color-surface-hover:  #162a4a;
-    --color-card:           #132240;
-    --color-card-border:    rgba(0, 212, 255, 0.12);
+    --color-surface:        #16233A;
+    --color-surface-hover:  #21324E;
+    --color-card:           #16233A;
+    --color-card-border:    #2A3C57;
 
-    --color-text-primary:   #e8edf5;
-    --color-text-secondary: #8899b4;
-    --color-text-muted:     #556883;
+    --color-text-primary:   #F8FAFC;
+    --color-text-secondary: #94A3B8;
+    --color-text-muted:     #64748B;
+
+    /* ---------- Hover Color States ---------- */
+    --color-accent-hover:   #00A3C4;
+    --color-success-hover:  #16A34A;
+    --color-warning-hover:  #D97706;
+    --color-danger-hover:   #DC2626;
 
     /* ---------- Typography ---------- */
     --font-family:          'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -67,7 +73,7 @@
     --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md:    0 4px 12px rgba(0, 0, 0, 0.4);
     --shadow-lg:    0 8px 24px rgba(0, 0, 0, 0.5);
-    --shadow-glow:  0 0 20px rgba(0, 212, 255, 0.15);
+    --shadow-glow:  0 0 20px rgba(0, 184, 217, 0.15);
 
     /* ---------- Transitions ---------- */
     --transition-fast:   150ms ease;
@@ -88,3 +94,4 @@
     --z-modal:    400;
     --z-toast:    500;
 }
+

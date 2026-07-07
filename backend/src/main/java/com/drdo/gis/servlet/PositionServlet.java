@@ -137,6 +137,10 @@ public class PositionServlet extends HttpServlet {
             props.addProperty("heading", p.getHeading());
             props.addProperty("altitude", p.getAltitude());
             if (p.getRecordedAt() != null) props.addProperty("recordedAt", p.getRecordedAt().toString());
+            
+            java.util.Set<String> currentZones = GeofenceService.getCurrentZonesForAsset(p.getAssetId());
+            props.addProperty("currentZones", String.join(", ", currentZones));
+
             feature.add("properties", props);
 
             features.add(feature);

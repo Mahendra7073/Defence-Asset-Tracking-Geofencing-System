@@ -18,7 +18,7 @@
     top: 0;
     left: 0;
     z-index: var(--z-sticky);
-    background: linear-gradient(180deg, var(--color-primary-dark) 0%, var(--color-surface) 100%);
+    background: var(--color-primary-dark);
     border-right: 1px solid var(--color-card-border);
     display: flex;
     flex-direction: column;
@@ -44,7 +44,7 @@
 .sidebar-logo .logo-icon {
     width: 32px;
     height: 32px;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-info));
+    background: var(--color-accent);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
@@ -163,7 +163,7 @@
     width: 34px;
     height: 34px;
     border-radius: var(--radius-full);
-    background: linear-gradient(135deg, var(--color-accent-dim), var(--color-info));
+    background: var(--color-accent-dim);
     display: flex;
     align-items: center;
     justify-content: center;

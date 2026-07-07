@@ -43,29 +43,105 @@
                         <input type="checkbox" id="toggle-wms"> WMS Overlay
                     </label>
                     <span class="header-clock" id="header-clock"></span>
+                    <button class="btn btn-secondary btn-sm" id="btn-logout" style="margin-left:var(--space-md);">Logout</button>
                 </div>
             </header>
-            <div class="page-content" style="padding:0;">
-                <div id="tracking-map" style="height:calc(100vh - 70px);width:100%;"></div>
+            <div class="page-content" style="padding:0; display:flex; height:calc(100vh - 60px); overflow:hidden;">
+                <!-- Asset Search & Filter Sidebar -->
+                <div class="tracking-sidebar" style="width:320px; background:var(--color-primary-dark); border-right:1px solid var(--color-card-border); display:flex; flex-direction:column; flex-shrink:0;">
+                    <div style="padding:var(--space-md); border-bottom:1px solid var(--color-card-border);">
+                        <input type="text" id="asset-search" class="form-input" placeholder="🔍 Search assets..." style="width:100%; margin-bottom:var(--space-sm); background:var(--color-primary); border-color:var(--color-card-border); color:var(--color-text-primary);">
+                        <div style="display:flex; gap:var(--space-xs);">
+                            <select id="filter-type" class="form-select" style="flex:1; font-size:11px; height:28px; background:var(--color-primary); color:var(--color-text-primary); border-color:var(--color-card-border);">
+                                <option value="all">All Types</option>
+                                <option value="vehicle">Vehicles</option>
+                                <option value="tank">Tanks</option>
+                                <option value="drone">Drones</option>
+                                <option value="person">Personnel</option>
+                                <option value="radar_station">Radars</option>
+                            </select>
+                            <select id="filter-status" class="form-select" style="flex:1; font-size:11px; height:28px; background:var(--color-primary); color:var(--color-text-primary); border-color:var(--color-card-border);">
+                                <option value="all">All Status</option>
+                                <option value="moving">Moving</option>
+                                <option value="idle">Idle</option>
+                                <option value="offline">Offline</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="asset-list" style="flex:1; overflow-y:auto; padding:var(--space-xs);">
+                        <div style="color:var(--color-text-muted); text-align:center; padding:var(--space-xl);">Loading assets...</div>
+                    </div>
+                    <div style="padding:var(--space-sm) var(--space-md); border-top:1px solid var(--color-card-border); background:var(--color-primary); display:flex; justify-content:space-between; font-size:11px; color:var(--color-text-muted);">
+                        <span>Total: <strong id="sidebar-count-total">0</strong></span>
+                        <span style="color:var(--color-success);">Moving: <strong id="sidebar-count-moving" style="color:var(--color-success);">0</strong></span>
+                        <span style="color:var(--color-warning);">Idle: <strong id="sidebar-count-idle" style="color:var(--color-warning);">0</strong></span>
+                        <span style="color:var(--color-danger);">Offline: <strong id="sidebar-count-offline" style="color:var(--color-danger);">0</strong></span>
+                    </div>
+                </div>
+
+                <!-- Map Container -->
+                <div id="tracking-map" style="flex:1; height:100%; position:relative;">
+                    <!-- Floating Asset Details Card -->
+                    <div id="asset-detail-card" class="map-overlay-card hidden">
+                        <div class="map-overlay-card-header">
+                            <h3 id="detail-name" style="margin:0;font-size:14px;font-weight:600;color:var(--color-accent);">Asset Details</h3>
+                            <span class="map-overlay-card-close" id="detail-close">&times;</span>
+                        </div>
+                        <div class="map-overlay-card-body">
+                            <div class="map-overlay-grid">
+                                <div class="map-overlay-item">
+                                    <span class="map-overlay-label">Code</span>
+                                    <span class="map-overlay-value" id="detail-code">—</span>
+                                </div>
+                                <div class="map-overlay-item">
+                                    <span class="map-overlay-label">Type</span>
+                                    <span class="map-overlay-value" style="text-transform:capitalize;" id="detail-type">—</span>
+                                </div>
+                                <div class="map-overlay-item">
+                                    <span class="map-overlay-label">Status</span>
+                                    <span class="map-overlay-value" id="detail-status">—</span>
+                                </div>
+                                <div class="map-overlay-item">
+                                    <span class="map-overlay-label">Speed</span>
+                                    <span class="map-overlay-value" id="detail-speed">—</span>
+                                </div>
+                                <div class="map-overlay-item">
+                                    <span class="map-overlay-label">Heading</span>
+                                    <span class="map-overlay-value" id="detail-heading">—</span>
+                                </div>
+                                <div class="map-overlay-item">
+                                    <span class="map-overlay-label">Altitude</span>
+                                    <span class="map-overlay-value" id="detail-altitude">—</span>
+                                </div>
+                                <div class="map-overlay-item">
+                                    <span class="map-overlay-label">Current Zone</span>
+                                    <span class="map-overlay-value" id="detail-zone">—</span>
+                                </div>
+                                <div class="map-overlay-item">
+                                    <span class="map-overlay-label">Mission</span>
+                                    <span class="map-overlay-value" id="detail-mission">—</span>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:var(--space-sm);">
+                                <button class="btn btn-primary btn-sm" id="detail-btn-follow" style="flex:1;">🎯 Follow</button>
+                                <button class="btn btn-secondary btn-sm" id="detail-btn-zoom" style="flex:1;">🔍 Zoom To</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
     <script src="../assets/js/map.js"></script>
+    <script src="../assets/js/app.js"></script>
     <script>
     (function() {
-        // Sidebar toggle
-        document.getElementById('sidebar-toggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-            setTimeout(function() { if (MapController.map) MapController.map.invalidateSize(); }, 300);
-        });
-
-        // Clock
-        function tick() {
-            document.getElementById('header-clock').textContent =
-                new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
-        }
-        tick(); setInterval(tick, 1000);
+        // Session check & logout button init
+        Auth.checkSession();
+        Auth.initLogoutButton();
 
         // Init map
         document.addEventListener('DOMContentLoaded', function() {

@@ -10,6 +10,37 @@
     <link rel="stylesheet" href="../assets/css/layout.css">
     <link rel="stylesheet" href="../assets/css/components.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .playback-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            align-items: center;
+            padding: var(--space-md);
+            background: var(--color-card-bg);
+            border-bottom: 1px solid var(--color-card-border);
+        }
+        .playback-bar select,
+        .playback-bar input[type="date"] {
+            height: 36px;
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-card-border);
+            background: var(--color-primary);
+            color: var(--color-text-primary);
+        }
+        #route-status {
+            font-size: 12px;
+            color: var(--color-text-muted);
+            padding: 6px var(--space-md);
+            border-top: 1px solid var(--color-card-border);
+            background: var(--color-card-bg);
+        }
+        .live-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .live-stat-label { font-size: 10px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .live-stat-value { font-size: 13px; font-weight: 600; color: var(--color-accent); font-family: monospace; }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -35,17 +66,69 @@
                 <div class="header-right"><button class="btn btn-secondary btn-sm" id="btn-logout">Logout</button></div>
             </header>
             <div class="page-content">
-                <div class="card" style="margin-bottom:var(--space-lg);">
-                    <div class="card-header" style="display:flex;gap:var(--space-md);align-items:center;flex-wrap:wrap;">
+
+                <!-- ── Controls Card ───────────────────────────────────────── -->
+                <div class="card" style="margin-bottom:var(--space-lg);padding:0;overflow:hidden;">
+                    <div class="playback-bar">
+                        <!-- Asset + Date selectors -->
                         <select class="form-select" id="route-asset-select" style="width:200px;"><option value="">Select Asset</option></select>
-                        <input type="date" class="form-input" id="route-date-start" style="width:160px;">
-                        <input type="date" class="form-input" id="route-date-end" style="width:160px;">
-                        <button class="btn btn-primary btn-sm" id="btn-load-route">Load Route</button>
-                        <button class="btn btn-secondary btn-sm" id="btn-play-route">▶ Play</button>
-                        <button class="btn btn-secondary btn-sm" id="btn-pause-route">⏸ Pause</button>
-                        <button class="btn btn-secondary btn-sm" id="btn-reset-route">⏹ Reset</button>
+                        <input type="date" class="form-input" id="route-date-start" style="width:155px;" title="Start date">
+                        <input type="date" class="form-input" id="route-date-end"   style="width:155px;" title="End date">
+                        <button class="btn-playback btn-playback-primary" id="btn-load-route">⟳ Load Route</button>
+
+                        <!-- Separator -->
+                        <div style="width:1px;height:28px;background:var(--color-card-border);margin:0 4px;"></div>
+
+                        <!-- Playback buttons -->
+                        <button class="btn-playback btn-playback-success"    id="btn-play-route"    title="Play / Resume">▶ Play</button>
+                        <button class="btn-playback btn-playback-warning"    id="btn-pause-route"   title="Pause">⏸ Pause</button>
+                        <button class="btn-playback btn-playback-secondary"  id="btn-restart-route" title="Restart from beginning"><span class="icon-cyan">↻</span> Restart</button>
+                        <button class="btn-playback btn-playback-danger"     id="btn-reset-route"   title="Clear route">■ Clear</button>
+
+                        <!-- Speed selector -->
+                        <label style="font-size:12px;color:var(--color-text-muted);white-space:nowrap;">Speed:</label>
+                        <select class="form-select" id="route-speed" style="width:80px;" title="Playback speed">
+                            <option value="0.5">0.5×</option>
+                            <option value="1" selected>1×</option>
+                            <option value="2">2×</option>
+                            <option value="4">4×</option>
+                        </select>
+
+                        <!-- Live stats row -->
+                        <div style="display:flex;gap:var(--space-md);margin-left:auto;">
+                            <div class="live-stat">
+                                <span class="live-stat-label">Progress</span>
+                                <span class="live-stat-value" id="route-progress">0 / 0</span>
+                            </div>
+                            <div class="live-stat">
+                                <span class="live-stat-label">Coordinates</span>
+                                <span class="live-stat-value" id="route-current-coords">—</span>
+                            </div>
+                            <div class="live-stat">
+                                <span class="live-stat-label">Current Speed</span>
+                                <span class="live-stat-value" id="route-current-speed">—</span>
+                            </div>
+                            <div class="live-stat">
+                                <span class="live-stat-label">Current Time</span>
+                                <span class="live-stat-value" id="route-current-time">—</span>
+                            </div>
+                            <div class="live-stat">
+                                <span class="live-stat-label">Dist Travelled</span>
+                                <span class="live-stat-value" id="route-dist-travelled">0 km</span>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Scrub slider -->
+                    <div style="padding:6px var(--space-md) 4px;">
+                        <input type="range" id="route-slider" min="0" max="100" value="0" style="width:100%;cursor:pointer;">
+                    </div>
+
+                    <!-- Status bar -->
+                    <div id="route-status">Ready. Select an asset and click Load Route.</div>
                 </div>
+
+                <!-- ── Map + Stats Grid ────────────────────────────────────── -->
                 <section class="grid-2">
                     <div class="card" style="padding:0;overflow:hidden;">
                         <div id="route-map" style="height:500px;"></div>
@@ -53,13 +136,41 @@
                     <div class="card">
                         <div class="card-header"><h3 class="card-title">Track Details</h3></div>
                         <div style="padding:var(--space-lg);">
-                            <div class="stat-card" style="margin-bottom:var(--space-md);"><div class="stat-info"><div class="stat-label">Distance</div><div class="stat-value" id="route-distance">—</div></div></div>
-                            <div class="stat-card" style="margin-bottom:var(--space-md);"><div class="stat-info"><div class="stat-label">Avg Speed</div><div class="stat-value" id="route-speed">—</div></div></div>
-                            <div class="stat-card" style="margin-bottom:var(--space-md);"><div class="stat-info"><div class="stat-label">Duration</div><div class="stat-value" id="route-duration">—</div></div></div>
-                            <div class="stat-card"><div class="stat-info"><div class="stat-label">GPS Points</div><div class="stat-value" id="route-points">—</div></div></div>
-                        </div>
-                        <div style="padding:0 var(--space-lg) var(--space-lg);">
-                            <input type="range" id="route-slider" min="0" max="100" value="0" style="width:100%;">
+                            <div class="stat-card" style="margin-bottom:var(--space-md);">
+                                <div class="stat-info">
+                                    <div class="stat-label">Total Distance</div>
+                                    <div class="stat-value" id="route-distance">—</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="margin-bottom:var(--space-md);">
+                                <div class="stat-info">
+                                    <div class="stat-label">Avg Speed</div>
+                                    <div class="stat-value" id="route-speed">—</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="margin-bottom:var(--space-md);">
+                                <div class="stat-info">
+                                    <div class="stat-label">Duration</div>
+                                    <div class="stat-value" id="route-duration">—</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="margin-bottom:var(--space-md);">
+                                <div class="stat-info">
+                                    <div class="stat-label">Total GPS Points</div>
+                                    <div class="stat-value" id="route-points">—</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-info">
+                                    <div class="stat-label">Legend</div>
+                                    <div style="font-size:12px;margin-top:8px;line-height:1.8;">
+                                        <span style="color:#00e676;">●</span> Start point &nbsp;
+                                        <span style="color:#ff5252;">●</span> End point<br>
+                                        <span style="color:#ffab00;">●</span> Current position<br>
+                                        <span style="color:#00d4ff;">—</span> GPS track path
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -75,3 +186,5 @@
     <script>Auth.checkSession(); Auth.initLogoutButton();</script>
 </body>
 </html>
+
+

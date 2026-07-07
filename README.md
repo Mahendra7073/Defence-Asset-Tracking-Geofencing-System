@@ -1,294 +1,384 @@
-# Defence GIS Tracking System
+# 🛡️ Defence Asset Tracking & Geofencing System
 
-```
-================================================================================
-                    DEFENCE ASSET TRACKING & GEOFENCING SYSTEM
-     Real-Time Telemetry Tracking • Perimeter Geofencing • Spatial Intelligence
-            Java • PostgreSQL • PostGIS • Apache Tomcat • Leaflet.js
-================================================================================
-```
-
-[![Build Status](https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System/actions/workflows/build.yml/badge.svg)](https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System/actions)
-[![Java Version](https://img.shields.io/badge/JDK-17-blue.svg)](https://adoptium.net/temurin/releases/?version=17)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-blue.svg)](https://www.postgresql.org/)
-[![PostGIS](https://img.shields.io/badge/PostGIS-3%2B-green.svg)](https://postgis.net/)
-[![Tomcat](https://img.shields.io/badge/Tomcat-9.0-orange.svg)](https://tomcat.apache.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
-A production-grade, real-time spatial asset monitoring, alert generation, and geofencing management application designed for defence sector logistics and perimeter security. Built with PostgreSQL + PostGIS, Java Servlets, Apache Tomcat, and Leaflet.js maps.
+### Real-Time Fleet Telemetry • Spatial Intelligence • Perimeter Security & Alerting
+*Built for DRDO GIS Operations using Java Servlets, PostgreSQL/PostGIS, GeoServer, and Leaflet.js.*
 
 ---
 
-## 📖 Navigation Index
-* [Architecture Documentation](docs/ARCHITECTURE.md)
-* [REST API Documentation](docs/API_DOCUMENTATION.md)
-* [Database Schema Reference](docs/DATABASE.md)
-* [Installation Guide](INSTALLATION.md)
-* [Tomcat Deployment Guide](DEPLOYMENT.md)
-* [Security Controls Policy](SECURITY.md)
-* [Troubleshooting Guide](TROUBLESHOOTING.md)
-* [Contributing Guidelines](CONTRIBUTING.md)
-* [Folder Tree Map](PROJECT_STRUCTURE.md)
+## 📖 Table of Contents
+1. [Project Overview](#-project-overview)
+2. [Key Features](#-key-features)
+3. [System Architecture](#-system-architecture)
+4. [Tech Stack](#-tech-stack)
+5. [Project Structure](#-project-structure)
+6. [Application Screenshots](#-application-screenshots)
+7. [Installation & Setup](#-installation--setup)
+   - [Windows & Linux Native Setup](#windows--linux-native-setup)
+   - [Docker & WSL2 Deployment Guide](#docker--wsl2-deployment-guide)
+8. [Setup Commands & Workflows](#-setup-commands--workflows)
+9. [Developer Guide](#-developer-guide)
+   - [Database Schema Reference](#database-schema-reference)
+   - [REST API Reference](#rest-api-reference)
+   - [GIS Layer Flow (Spatial Data Pipeline)](#gis-layer-flow-spatial-data-pipeline)
+   - [Real-Time Simulation & Alert Engines](#real-time-simulation--alert-engines)
+10. [Troubleshooting & Common Errors](#-troubleshooting--common-errors)
+11. [Production Deployment Guide](#-production-deployment-guide)
+12. [Security, Performance & Code Standards](#-security-performance--code-standards)
+13. [Future Improvements](#-future-improvements)
+14. [License & Contributing](#-license--contributing)
 
 ---
 
-## ⚡ Overview
-The Defence GIS Tracking System provides military command centers with spatial intelligence. By combining high-frequency coordinate ingestion with database-level geometric computations, the system processes fleet tracking parameters, alerts operators on perimeter breaches, and renders real-time Leaflet overlays without heavy framework dependency.
+## ⚡ Project Overview
+The **Defence Asset Tracking & Geofencing System** is a mission-critical, production-grade spatial intelligence platform designed for securing military bases, monitoring troop movements, and geofencing sensitive defence perimeters (e.g., ammo depots, restricted airfields, and safe sectors). 
+
+By combining high-frequency GPS telemetry ingestion with database-level geometric calculations via PostGIS, the system processes fleet tracking parameters in real time, alerts system operators of perimeter violations via live toast alarms, and renders Leaflet-based WMS/WFS map overlays directly from GeoServer.
 
 ---
 
-## ⚙️ Features
-- **Live Fleet Tracking:** Real-time updates of military vehicles, personnel, and drones on a Leaflet map.
-- **Dynamic Geofencing:** Restricted, warning, and safe polygon boundary calculations using PostGIS topological formulas.
-- **Micro-Animations:** Interactive map highlights that pulse geofence perimeters and fade unselected zones.
-- **Historical Route Playback:** Displays breadcrumb path logs and calculates distance measurements and speeds.
-- **KPI Dashboards:** KPI panels, warning counters, and charts showing active hardware parameters.
-- **Authorization Filters:** Session validation filters guarding all endpoints under `/api/*`.
-
----
-
-## 🖼️ Application Interfaces (Screenshots)
-
-Below are the actual interface screenshots captured from the running system:
-
-### 1. Landing Page
-![Landing Page](docs/images/landing.png)
-
-### 2. Secure Login Portal
-![Login Portal](docs/images/login.png)
-
-### 3. Operational Metrics Dashboard
-![Dashboard](docs/images/dashboard.png)
-
-### 4. Real-Time Telemetry Map
-![Live Tracking Map](docs/images/tracking.png)
-
-### 5. Perimeter Geofence Zones Map
-![Geofence Zones Map](docs/images/geofence.png)
-
-### 6. Geofence Zone Metrics (Breach Inspection)
-![Geofence Zone Details](docs/images/geofence_details.png)
-
-### 7. Core Assets Registry
-![Assets Registry Table](docs/images/assets.png)
-
-### 8. Real-Time Breach Alerts Feeds
-![Alarms Feed Table](docs/images/alerts.png)
-
-### 9. Custom Query Reports Generator
-![Reports Generator Table](docs/images/reports.png)
-
-### 10. System Administrator Accounts Manager
-![Users Administration Table](docs/images/users.png)
-
-### 11. Historical Route Replay Player
-![Historical Path Replay](docs/images/routes.png)
-
-### 12. Mobile Responsive Dashboard Emulation
-![Mobile Responsive Layout](docs/images/mobile.png)
+## ⚙️ Key Features
+- 🗺️ **Live Fleet Tracking & Telemetry**: Monitor military assets (vehicles, drones, personnel, and tanks) in real time with high-frequency coordinate ingestion and interactive Leaflet.js dashboards.
+- 📍 **Dynamic Polygon Geofencing**: Define and manage multi-point restricted, warning, and safe zones directly on the map. Space-intersects are calculated at the SQL/PostGIS layer using topological formulas (`ST_Contains`, `ST_Within`).
+- 🚨 **Real-Time Alert & Event Engine**: Event-driven alert system triggers visual alarms (CRITICAL, HIGH, MEDIUM, LOW) for unauthorized asset movements, geofence breaches, low battery, and communication blackouts.
+- 🛤️ **Historical Route Playback**: Analyze troop and vehicle routes with a step-by-step breadcrumb replay player. Calculates total distance traveled, path speeds, and average speed over time.
+- 👤 **Role-Based Access Control (RBAC)**: Secure access restricted via authentication servlet filters (`AuthFilter`) with distinct permissions for `admin`, `operator`, and `viewer`.
+- 🔄 **Autonomous Simulation**: Background GPS and alert threads simulate asset patrolling, communication failures, battery depletion, and base recharges automatically.
+- 🐳 **One-Command Dockerization**: Fully containerized using a multi-stage Dockerfile compiling Java Maven packages into a Tomcat runtime alongside PostgreSQL/PostGIS and GeoServer databases.
 
 ---
 
 ## 🏗️ System Architecture
-The application uses a clean multi-tier structure to decouple map presentation from database queries:
+The application is structured into four decoupled layers, prioritizing speed, low resource consumption, and reliability:
 
 ```mermaid
 graph TD
-    Client[Leaflet JS Map Client] <-->|HTTP JSON REST| Servlet[Java Servlets Controllers]
-    Servlet <-->|Strongly-Typed JDBC| DAO[Data Access Objects]
-    DAO <-->|HikariCP Connections| DB[(PostgreSQL + PostGIS Database)]
+    subgraph Client Presentation Layer
+        UI[Leaflet JS Map Client]
+        Dashboard[Operational Statistics Panel]
+    end
+
+    subgraph Controller & Web Server
+        Tomcat[Apache Tomcat 9.0 Web Server]
+        Servlet[Java Servlets Web Controllers]
+        Auth[AuthFilter Middleware]
+    end
+
+    subgraph Spatial & Relational Storage
+        DB[(PostgreSQL + PostGIS Database)]
+        GS[GeoServer GIS Service]
+    end
+
+    UI <-->|HTTP JSON REST & Auth Cookies| Auth
+    Auth <--> Servlet
+    Servlet <-->|Strongly-Typed JDBC & HikariCP| DB
+    GS <-->|WMS/WFS Layers| UI
+    GS <-->|JDBC Map Rendering| DB
 ```
 
-For complete sequence diagrams, context maps, and flows, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+1. **Leaflet JS Client**: Interacts with the backend via JSON REST APIs. Renders Leaflet maps, custom markers, drawing controls, and real-time WMS overlays.
+2. **Java Servlet Backend**: Controllers run in an Apache Tomcat 9 container, processing requests, updating configurations, and driving background simulation tasks.
+3. **GeoServer Engine**: Serves geographic vector coordinates as Web Map Services (WMS) or Web Feature Services (WFS) for optimized rendering on map clients.
+4. **PostgreSQL/PostGIS Database**: Serves as the spatial store. Implements indexed geometries (`GEOMETRY(Point, 4326)`, `GEOMETRY(Polygon, 4326)`) and executes lightning-fast intersection queries.
 
 ---
 
-## 🛠️ Technology Stack
-
-| Component | Technology | Description |
-| --- | --- | --- |
-| **Frontend** | HTML5, Vanilla CSS, Vanilla JS | Dark-themed, lightweight SPA client. |
-| **Mapping Engine** | Leaflet.js | GIS maps overlay rendering layer. |
-| **Backend API** | Java 17, Java Servlets, Maven | API endpoint processing. |
-| **Connection Pool**| HikariCP | High-performance JDBC connection management. |
-| **Serialization** | Google Gson | JSON parsing and serialization utility. |
-| **Authentication** | BCrypt | Constant-time password verification hashing. |
-| **Database** | PostgreSQL 15+ & PostGIS 3+ | Spatial geometry storage and topological checks. |
+## 🛠️ Tech Stack
+- **Frontend**: Vanilla HTML5, CSS3 (Strict Military Dark Theme), Vanilla JavaScript (No heavy frameworks, ES5/ES6 compliant).
+- **Backend**: Java 17, Java Servlets (Java EE 4), JDBC, HikariCP Connection Pool, Gson (JSON parsing), BCrypt (Password hashing).
+- **Database**: PostgreSQL 16, PostGIS 3.4 (Spatial extensions).
+- **GIS Layer**: GeoServer 2.25.2, Leaflet.js 1.9.4.
+- **Dockerization**: Multi-stage Docker builds, Docker Compose orchestration, Named volumes and private bridges.
+- **Automation / Build**: Maven Compiler 3.13.0, Maven War Plugin 3.4.0.
 
 ---
 
-## 📥 Installation Summary
-Prerequisites include JDK 17, Maven 3.8+, Tomcat 9.0+, and PostgreSQL with PostGIS.
+## 📁 Project Structure
+```
+Defence-Asset-Tracking-Geofencing-System/
+├── .github/workflows/          # CI/CD pipelines (Maven builds)
+├── backend/                    # Maven Java Backend Web Application
+│   ├── src/main/java/          # Java Servlet source code
+│   │   └── com/drdo/gis/
+│   │       ├── config/         # Database configurations (HikariCP)
+│   │       ├── dao/            # Data Access Objects (SQL queries)
+│   │       ├── filter/         # Security Auth filters
+│   │       ├── model/          # Strongly-typed POJO entities
+│   │       ├── service/        # Geofencing calculations & Simulator Engines
+│   │       └── servlet/        # HTTP Web Controllers & REST APIs
+│   ├── src/main/resources/     # Resource files (db.properties)
+│   └── pom.xml                 # Maven build descriptor dependencies
+├── database/                   # Database scripts and migration folder
+│   └── migrations/             # Incremental SQL migration steps (V002 - V005)
+├── docker/                     # Docker configurations
+│   ├── geoserver/              # GeoServer setup scripts
+│   ├── postgres/               # Postgres DB init.sql scripts
+│   └── tomcat/                 # Tomcat properties mapping
+├── docs/                       # Architectural manuals and documentation
+│   └── images/                 # PNG Screenshots referenced in README
+├── frontend/                   # UI Assets compiled in WAR build
+│   ├── assets/
+│   │   ├── css/                # Variables, Base, Layout, and Component styles
+│   │   └── js/                 # App, Map, Auth, and Tracking scripts
+│   └── pages/                  # System pages (Dashboard, Alerts, Tracking)
+├── docker-compose.yml          # Container configuration orchestrator
+├── Dockerfile                  # Multi-stage compile & run Tomcat setup
+└── README.md                   # Main handbook documentation
+```
 
-1. **Clone the project:**
-   ```bash
+---
+
+## 🖼️ Application Screenshots
+Here are the actual screenshots captured from the running system:
+
+| 🖼️ Landing Hero Page | 🛡️ Secure Login Gate |
+|:---:|:---:|
+| ![Landing Page](docs/images/landing.png) | ![Login Portal](docs/images/login.png) |
+| **📊 Executive Dashboard** | **🗺️ Live Telemetry Tracking** |
+| ![Dashboard](docs/images/dashboard.png) | ![Live Tracking Map](docs/images/tracking.png) |
+| **📍 Perimeter Geofence Zones** | **🚁 Historical Route Playback** |
+| ![Geofence Zones Map](docs/images/geofence.png) | ![Historical Path Replay](docs/images/routes.png) |
+| **📋 Spatial Reports Queries** | **👤 Security RBAC User Admin** |
+| ![Reports Generator Table](docs/images/reports.png) | ![Users Administration Table](docs/images/users.png) |
+
+---
+
+## ⚙️ Installation & Setup
+
+### Windows & Linux Native Setup
+#### Prerequisites:
+1. **JDK 17** installed with `JAVA_HOME` environment variable configured.
+2. **Maven 3.8+** installed and added to your `PATH`.
+3. **PostgreSQL 15+** with **PostGIS 3+** extension installed.
+4. **Apache Tomcat 9.0** web server downloaded.
+
+#### Steps:
+1. **Database Setup**:
+   - Create a PostgreSQL database named `defence_gis`.
+   - Run the schema scripts located in `docker/postgres/init.sql` to initialize tables, seed users, and prepare spatial tables.
+2. **Configuration**:
+   - Copy `backend/src/main/resources/db.properties.example` to `backend/src/main/resources/db.properties`.
+   - Edit the properties to match your local PostgreSQL credentials:
+     ```properties
+     db.url=jdbc:postgresql://localhost:5432/defence_gis
+     db.username=postgres
+     db.password=YOUR_PASSWORD_HERE
+     ```
+3. **Build Web Application**:
+   - Build the war package using Maven:
+     ```powershell
+     cd backend
+     mvn clean package
+     ```
+   - Copy `backend/target/DefenceGIS.war` into Tomcat's `webapps/` folder.
+4. **Run Server**:
+   - Start Apache Tomcat: on Windows run `bin/startup.bat`, on Linux run `bin/startup.sh`.
+
+---
+
+### Docker & WSL2 Deployment Guide
+Docker Compose handles the automatic download, configuration, and integration of the database, Tomcat server, and GeoServer within a dedicated private network.
+
+#### Step 1: Docker Desktop & WSL2 Installation
+For Windows users, installing WSL2 (Windows Subsystem for Linux) is required for high-performance Docker file mapping and container operations.
+
+1. **Install WSL2**:
+   - Open PowerShell as Administrator and run:
+     ```powershell
+     wsl --install
+     ```
+   - Restart your machine if prompted.
+2. **Install Docker Desktop**:
+   - Download the installer from the [Docker Portal](https://www.docker.com/products/docker-desktop/).
+   - Follow instructions and check **"Use the WSL 2 based engine"** during installation.
+3. **Verify Installation**:
+   - In terminal/PowerShell, ensure Docker is running:
+     ```powershell
+     docker --version
+     docker compose version
+     ```
+
+#### Step 2: Deploy Container Architecture
+1. Clone the repository and navigate to the project directory:
+   ```powershell
    git clone https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System.git
+   cd Defence-Asset-Tracking-Geofencing-System
    ```
-2. **Database Setup:** Run migrations sequentially:
-   ```bash
-   psql -U postgres -f database/defence_gis.sql
-   psql -U postgres -d defence_gis -f database/migrations/V002__schema_fixes_and_geofencing.sql
-   # (Run V003, V004, V005 migrations in order)
+2. Build and start containers:
+   ```powershell
+   docker compose down -v
+   docker compose build --no-cache
+   docker compose up -d
    ```
-3. **Configurations:** Add database connection settings to `backend/src/main/resources/db.properties`.
-4. **Compile & Deploy:**
-   ```bash
-   cd backend
-   mvn clean package
-   copy target/DefenceGIS.war %CATALINA_HOME%/webapps/
+3. Verification:
+   Check running containers using:
+   ```powershell
+   docker compose ps
    ```
-
-*For detailed configurations, see [INSTALLATION.md](INSTALLATION.md) and [DEPLOYMENT.md](DEPLOYMENT.md).*
 
 ---
 
-## 🐳 Docker Deployment (Recommended)
+## ⚡ Setup Commands & Workflows
 
-Deploy the entire system with a single command — no manual installation of Java, Tomcat, PostgreSQL, PostGIS, or GeoServer required.
+### Docker Lifecycle Commands
+- **Start Services**: `docker compose up -d`
+- **Stop Services**: `docker compose down`
+- **Rebuild Services**: `docker compose up -d --build --force-recreate`
+- **Check Container Logs**: `docker compose logs -f tomcat`
 
-### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running (Windows/Linux/macOS)
-- Git
+### Native Maven Compilation
+- **Compile & Build WAR package**: `mvn clean package -f backend/pom.xml`
+- **Skip Unit Tests**: `mvn clean package -DskipTests -f backend/pom.xml`
 
-### Quick Start
-```bash
-# 1. Clone the repository
-git clone https://github.com/Mahendra7073/Defence-Asset-Tracking-Geofencing-System.git
-cd Defence-Asset-Tracking-Geofencing-System
+### Infrastructure Services Integration Map
 
-# 2. Build and start all containers
-docker compose up -d --build
+| Service Name | Port Mapping | Default User | Default Password | URL |
+| :--- | :--- | :--- | :--- | :--- |
+| **Tomcat Web App** | `8080` | `admin` | `admin123` | `http://localhost:8080/DefenceGIS/` |
+| **PostgreSQL / PostGIS**| `5432` | `postgres` | `postgres` | `jdbc:postgresql://localhost:5432/defence_gis` |
+| **GeoServer Engine** | `8085` | `admin` | `geoserver` | `http://localhost:8085/geoserver/` |
 
-# 3. Wait for initialization (~2-3 minutes on first run)
-docker compose ps     # Check all containers are "healthy"
+---
 
-# 4. Open browser
-# Application:  http://localhost:8080/DefenceGIS
-# GeoServer:    http://localhost:8085/geoserver
+## 🛠️ Developer Guide
+
+### Database Schema Reference
+```
+[users] 
+   ^ (ack_by)
+   |
+[alerts] ------------> [assets] <----------- [asset_positions]
+   | (zone_id)           ^
+   v                     | (asset_id)
+[geofence_zones]      [track_history]
 ```
 
-### Docker Commands
-| Command | Description |
-|---|---|
-| `docker compose up -d --build` | Build and start all services |
-| `docker compose up -d` | Start services (after initial build) |
-| `docker compose down` | Stop and remove containers |
-| `docker compose restart` | Restart all services |
-| `docker compose logs -f` | Follow live logs |
-| `docker compose logs -f tomcat` | Follow Tomcat logs only |
-| `docker compose ps` | Check container status |
-| `docker compose down -v` | Stop and remove containers + volumes (full reset) |
+- **`users`**: Contains credential logs and permissions (`admin`, `operator`, `viewer`).
+- **`assets`**: Catalog of physical items (`vehicle`, `drone`, `personnel`, `tank`, `radar`).
+- **`asset_positions`**: Log of coordinates (`geom` Point in SRID 4326).
+- **`geofence_zones`**: Boundaries polygon coordinates (`geom` Polygon in SRID 4326).
+- **`alerts`**: Breach violations tracking (breached coordinates, severity, and acknowledgement state).
+- **`track_history`**: Aggregated travel coordinates paths saved as `LineString`.
 
-### Container Architecture
-| Container | Image | Port | Purpose |
-|---|---|---|---|
-| `defence-postgres` | `postgis/postgis:16-3.4` | `5432` | PostgreSQL + PostGIS database |
-| `defence-tomcat` | Multi-stage build | `8080` | Java 17 + Tomcat 9 + WAR |
-| `defence-geoserver` | `kartoza/geoserver:2.25.2` | `8085` | GeoServer WMS/WFS service |
+---
 
-### GeoServer Configuration
-After containers are healthy, run the GeoServer setup script once:
-```bash
-# Linux/macOS/WSL
-bash docker/geoserver/setup_geoserver.sh
+### REST API Reference
+All APIs are relative to `http://localhost:8080/DefenceGIS/api`. Access to all endpoints (except login/session) requires an active HTTP session cookie.
 
-# Windows (Git Bash or WSL)
-bash docker/geoserver/setup_geoserver.sh
+#### Authentication
+- **`POST /auth/login`**: Authenticate and initiate session.
+- **`POST /auth/logout`**: Terminate session.
+- **`GET /auth/session`**: Check active session context.
+
+#### Dashboard
+- **`GET /dashboard`**: Returns system telemetry logs counter summary (total assets, zones, alarms).
+
+#### Assets
+- **`GET /assets`**: List assets. Can be filtered by `?type=vehicle`.
+- **`POST /assets`**: Create a new asset.
+- **`DELETE /assets/{id}`**: Delete asset configuration.
+
+#### Geofences
+- **`GET /geofences`**: Fetch geofence zones in GeoJSON format.
+- **`POST /geofences`**: Register a new perimeter polygon.
+- **`DELETE /geofences/{id}`**: Remove a geofence.
+
+#### Positions
+- **`GET /positions`**: Fetch latest coordinates of active assets in GeoJSON format.
+
+#### Tracks / History
+- **`GET /tracks?assetId={id}&start={YYYY-MM-DD}&end={YYYY-MM-DD}`**: Fetch coordinate telemetry path history in LineString GeoJSON format with timestamp and speed lists (for route playback).
+
+---
+
+### GIS Layer Flow (Spatial Data Pipeline)
+The system leverages a classic geographic mapping framework:
+
 ```
-
-### Environment Variables
-Docker configuration values are stored in `.env`:
-```properties
-POSTGRES_DB=defence_gis
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-GEOSERVER_ADMIN_USER=admin
-GEOSERVER_ADMIN_PASSWORD=geoserver
+[PostGIS DB] ──(Spatial coordinates)──> [GeoServer WMS/WFS Engine] ──(Map Layers)──> [Leaflet JS Map Client]
 ```
-
-
-
-## 🔐 Default Credentials
-
-Pre-seeded database accounts:
-
-| Username | Password | Role | Description |
-| --- | --- | --- | --- |
-| **drdo** | `drdo2026` | ADMIN | Primary Administrator |
-| **admin** | `admin123` | ADMIN | System Administrator |
-| **mahendra** | `mahendra123` | ADMIN | Operations Administrator |
+1. **Coordinates Storage**: Dynamic geometries are updated inside PostgreSQL database.
+2. **GeoServer Publishing**: GeoServer reads coordinates from the PostGIS database and publishes them as maps (via WMS or WFS).
+3. **Leaflet client layers mapping**: Map client layers render tile mapping overlays.
 
 ---
 
-## 📡 REST API Overview
+### Real-Time Simulation & Alert Engines
+The application includes two built-in daemon services to simulate real-time operations without user action:
 
-The backend exposes a lightweight REST API protected by session validation:
-
-*   **Authentication**:
-    *   `POST /api/auth/login` - Verify user credentials and initialize session.
-    *   `POST /api/auth/logout` - Invalidate active session.
-    *   `GET /api/auth/session` - Retrieve active session profile details.
-*   **Operational Monitoring**:
-    *   `GET /api/dashboard` - Returns operational summary (total assets, active count, zone metrics, unacknowledged alerts).
-    *   `GET /api/assets` - Retrieves list of all assets in registry.
-    *   `GET /api/positions/latest` - Retrieves latest telemetry points in GeoJSON format.
-    *   `GET /api/geofences` - Retrieves all polygon bounds in GeoJSON format.
-    *   `GET /api/alerts` - Retrieves breach and SOS alerts feed.
-
-*For full schemas and parameter structures, see the [REST API Documentation](docs/API_DOCUMENTATION.md).*
+1. **GPS Simulator (`GpsSimulatorService`)**:
+   - Runs in the background (every 30 seconds by default).
+   - Simulates realistic patrol movements around a 10 km bounding box centered at the Jodhpur Military Base.
+   - Triggers drone battery draining, automated recharging at bases, random communication blockouts (untracked ticks), and SOS incidents.
+2. **Alert Engine (Event-Driven)**:
+   - Processes coordinate events inside `GpsSimulatorService`.
+   - Compares asset locations with active geofence polygons.
+   - Logs an alarm immediately to the database on entering/exiting geofenced zones.
+   - Raises speed limit alerts (`SPEED_EXCEEDED` > 80 km/h for vehicles), critical alarms (`COMM_LOST`), and low power statuses (`BATTERY_LOW` < 20% for drones).
 
 ---
 
-## 🚀 Future Scope
-- **Websockets Stream:** Replace long-polling routes with full-duplex WebSocket connections.
-- **Kafka Telemetry Buffer:** Integrate Kafka message streams to ingestion pipelines for high-throughput tracking.
-- **Audit Logs:** Add database-level log tables for administrative monitoring.
+## 🚨 Troubleshooting & Common Errors
+
+### 1. Database Connection Rejected
+- **Error**: `Connection refused: Connect. Tomcat fails to boot.`
+- **Reason**: PostgreSQL service is down or container initialization is not complete.
+- **Fix**: Check status using `docker compose logs postgres`. Ensure your password matched credentials in `db.properties`.
+
+### 2. GeoServer Setup Timeout
+- **Error**: `Setup container fails or setup script exits with status 1.`
+- **Reason**: GeoServer takes up to 2 minutes to boot on first run. If the sidecar script times out, database connection mappings fail.
+- **Fix**: Re-run the setup service container using:
+  ```powershell
+  docker compose restart geoserver-setup
+  ```
+
+### 3. WMS Overlay Map Missing (Blank Leaflet Layers)
+- **Error**: Map renders, but layers published by GeoServer do not overlay on top.
+- **Reason**: CORS blocking or incorrect coordinate projection index.
+- **Fix**: Check the browser console. If CORS errors are present, add GeoServer CORS headers in GeoServer's `web.xml`. Alternatively, verify layers inside GeoServer admin console (`http://localhost:8085/geoserver`).
 
 ---
 
-## 🤝 Contributing
-For commit rules, branch names, and PR procedures, please read the [CONTRIBUTING.md](CONTRIBUTING.md) guide.
+## 🚀 Production Deployment Guide
+For deploying to production servers (Tomcat, cloud VMs, etc.):
+
+1. **Secure Database Credentials**: Use environment variables or production property injections. Avoid using default `postgres`/`postgres` passwords.
+2. **Scale Connection Pooling**: Increase HikariCP connection limits inside `db.properties` under `db.pool.maxSize=50`.
+3. **Configure SSL**: Secure Tomcat endpoints using TLS certificates in Tomcat's `server.xml` config.
+4. **Production CORS Setting**: Restrict CORS properties inside Tomcat/GeoServer filters to only allow requests from authorized domain names.
 
 ---
 
-## 📄 License
-Licensed under the [MIT License](LICENSE).
+## 🔒 Security, Performance & Code Standards
+
+### Security
+- **Auth Filtering Middleware**: Secure servlet filters block unauthenticated API access, returning a `401 Unauthorized` JSON payload.
+- **BCrypt Encryption**: Passwords are saved as secure BCrypt hashes with a cost strength of `12`.
+- **Prepared Statements**: All database operations use JDBC parameters queries to prevent SQL Injection attacks.
+
+### Performance
+- **Connection Pools**: Database connections are managed via HikariCP connection pools to avoid CPU overhead from opening/closing connections.
+- **Spatial Indexing**: Geometries are indexed using `GIST` indices to ensure sub-millisecond geofence intersects.
+- **Optimized Map Loading**: Coordinate history queries are aggregated into optimized GeoJSON structures to reduce network bandwidth.
+
+### Code Style
+- Desktop/Mobile responsiveness implemented using vanilla CSS flex layouts.
+- Vanilla JavaScript code follows strict formatting guidelines (no jQuery, strict console error logging).
 
 ---
 
-## 👥 DRDO Internship Team
+## 🔮 Future Improvements
+- 🛰️ **Direct GPS Device Ingestion**: Implement UDP socket listeners for direct ingestion of coordinates from physical hardware tracking devices.
+- 📉 **Machine Learning Breach Prediction**: Train ML models on coordinates history to alert operators of potential geofence breaches before they occur.
+- 📳 **Push Notification Channels**: Integrate WebSockets for real-time alert dispatch without client polling.
 
-This project was developed as part of the DRDO Internship Program by a collaborative student team.
+---
 
-### 3rd Year Students
+## 📄 License & Contributing
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
-- **Mahendra Gurjar** — Computer Science & Engineering (CSE)
-- **Priyadarshini Choudhary** — Information Technology (IT)
-- **Shahina Parvin** — Computer Science & Engineering (CSE)
-
-### 2nd Year Students
-
-- **Gaurav Deora** — Computer Science & Engineering (CSE)
-- **Omprakash** — Computer Science & Engineering (CSE)
-- **Chandrika Solanki** — Information Technology (IT)
-- **Abhimanyu Singh Rajpurohit** — Information Technology (IT)
-- **Pinku Daila** — Artificial Intelligence & Data Science (AIDS)
-- **Kulwant Singh Rathore** — Electronics & Communication Engineering (ECC)
-
-**Total Team Members:** 9
-
-### Internship Mentor
-
-**Shri Shyam Lal**
-
-
-## Acknowledgements
-
-This project was successfully completed as part of the **DRDO Internship Program**.
-
-We sincerely thank the **Defence Research and Development Organisation (DRDO)** for providing this valuable learning opportunity and an environment to work on real-world GIS-based defence applications.
-
-Our heartfelt appreciation goes to our **Internship Mentor, Shri Shyam Lal**, whose guidance, encouragement, and technical insights were instrumental throughout the project.
-
-We also acknowledge the maintainers and contributors of the open-source technologies that made this project possible, including **Java**, **Leaflet.js**, **PostgreSQL**, **PostGIS**, **GeoServer**, **Apache Tomcat**, and **Maven**.
-
+### Contributing
+1. Fork the Repository.
+2. Create a Feature Branch (`git checkout -b feature/NewFeature`).
+3. Commit changes with detailed, conventional commit messages.
+4. Open a Pull Request for code review.

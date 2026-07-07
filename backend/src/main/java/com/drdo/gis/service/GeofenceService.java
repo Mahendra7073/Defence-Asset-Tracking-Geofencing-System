@@ -126,4 +126,21 @@ public class GeofenceService {
 
         return generated;
     }
+
+    public static Set<String> getCurrentZonesForAsset(int assetId) {
+        Set<Integer> zoneIds = assetZoneState.get(assetId);
+        if (zoneIds == null || zoneIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+        Set<String> zoneNames = new HashSet<>();
+        for (Integer id : zoneIds) {
+            ZoneHit hit = zoneCache.get(id);
+            if (hit != null) {
+                zoneNames.add(hit.zoneName);
+            } else {
+                zoneNames.add("Zone-" + id);
+            }
+        }
+        return zoneNames;
+    }
 }

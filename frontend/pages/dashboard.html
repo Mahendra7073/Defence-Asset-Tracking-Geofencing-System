@@ -110,44 +110,15 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
     <script src="../assets/js/map.js"></script>
+    <script src="../assets/js/app.js"></script>
     <script>
     (function() {
-        var API_BASE = '/DefenceGIS/api';
-
-        // Session check
-        fetch(API_BASE + '/auth/session', { credentials: 'same-origin' })
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (data.status !== 'success') {
-                    window.location.href = 'login.html';
-                    return;
-                }
-                var u = data.data;
-                document.getElementById('user-display-name').textContent = u.username || 'Admin';
-                document.getElementById('user-display-role').textContent = u.role || 'operator';
-                document.getElementById('user-avatar').textContent = (u.username || 'A').charAt(0).toUpperCase();
-            })
-            .catch(function() { window.location.href = 'login.html'; });
-
-        // Logout
-        document.getElementById('btn-logout').addEventListener('click', function() {
-            fetch(API_BASE + '/auth/logout', { method: 'POST', credentials: 'same-origin' })
-                .finally(function() { window.location.href = 'login.html'; });
-        });
-
-        // Clock
-        function updateClock() {
-            document.getElementById('header-clock').textContent =
-                new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
-        }
-        updateClock();
-        setInterval(updateClock, 1000);
-
-        // Sidebar toggle
-        document.getElementById('sidebar-toggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-        });
+        // Session check & logout button init using global module
+        Auth.checkSession();
+        Auth.initLogoutButton();
 
         // Load dashboard stats
         function loadStats() {
@@ -192,16 +163,26 @@
                 });
         }
 
+        // Expose Dashboard namespace globally for app.js polling adjustment
+        window.Dashboard = {
+            loadStats: loadStats,
+            loadRecentAlerts: loadRecentAlerts,
+            startAutoRefresh: function() {
+                // Polling starts and can be adjusted
+                setInterval(loadStats, 30000);
+                setInterval(loadRecentAlerts, 30000);
+            }
+        };
+
         // Init map
         document.addEventListener('DOMContentLoaded', function() {
             MapController.init('dashboard-map');
             MapController.loadAssetMarkers();
             MapController.loadGeofenceZones();
             MapController.startAutoRefresh(15000);
-            loadStats();
-            loadRecentAlerts();
-            setInterval(loadStats, 30000);
-            setInterval(loadRecentAlerts, 30000);
+            window.Dashboard.loadStats();
+            window.Dashboard.loadRecentAlerts();
+            window.Dashboard.startAutoRefresh();
         });
     })();
     </script>

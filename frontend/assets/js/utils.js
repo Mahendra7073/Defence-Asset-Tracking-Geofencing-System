@@ -46,11 +46,18 @@ var API = {
 
     handleError: function(err) {
         console.error('[API Error]', err);
-        var toast = document.getElementById('toast');
-        if (toast) {
-            toast.textContent = 'Error: ' + (err.message || 'Request failed');
-            toast.classList.add('show');
-            setTimeout(function() { toast.classList.remove('show'); }, 4000);
+        var msg = err.message || (typeof err === 'string' ? err : 'Request failed');
+        if (typeof App !== 'undefined' && App.showToast) {
+            App.showToast('Error: ' + msg, 'danger');
+        } else {
+            var toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = 'Error: ' + msg;
+                toast.classList.add('show');
+                setTimeout(function() { toast.classList.remove('show'); }, 4000);
+            } else {
+                alert('Error: ' + msg);
+            }
         }
     }
 };

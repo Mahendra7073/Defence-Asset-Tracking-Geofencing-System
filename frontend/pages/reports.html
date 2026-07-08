@@ -37,7 +37,7 @@
                         <option value="month">Last 30 days</option>
                         <option value="all">All Time</option>
                     </select>
-                    <button class="btn btn-primary btn-sm" id="btn-export-report">📥 Export CSV</button>
+                    <button class="btn btn-primary btn-sm" id="btn-export-report">📥 Export Excel</button>
                     <button class="btn btn-secondary btn-sm" id="btn-logout">Logout</button>
                 </div>
             </header>
@@ -54,18 +54,21 @@
                     </div>
                     <div class="card">
                         <div class="card-header"><h3 class="card-title">Alert History</h3></div>
-                        <table class="data-table" id="report-table">
-                            <thead><tr><th>Time</th><th>Asset</th><th>Zone</th><th>Type</th><th>Severity</th><th>Status</th></tr></thead>
-                            <tbody id="report-table-body">
-                                <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Loading report...</div></div></td></tr>
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="data-table" id="report-table">
+                                <thead><tr><th>Time</th><th>Asset</th><th>Zone</th><th>Type</th><th>Severity</th><th>Status</th></tr></thead>
+                                <tbody id="report-table-body">
+                                    <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Loading report...</div></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
             </div>
         </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="../assets/js/xlsx.full.min.js?v=20260708"></script>
     <script src="../assets/js/utils.js?v=20260708"></script>
     <script src="../assets/js/auth.js?v=20260708"></script>
     <script src="../assets/js/reports.js?v=20260708"></script>

@@ -76,8 +76,20 @@ public class AssetServlet extends HttpServlet {
         int id = Integer.parseInt(pathInfo.substring(1));
         Asset a = readBody(req, Asset.class);
         if (a == null) { writeJson(resp, 400, "error", "Invalid data", null); return; }
-        a.setId(id);
-        boolean ok = dao.update(a);
+        
+        Asset existing = dao.findById(id);
+        if (existing == null) {
+            writeJson(resp, 404, "error", "Asset not found", null);
+            return;
+        }
+        
+        if (a.getAssetName() != null) existing.setAssetName(a.getAssetName());
+        if (a.getAssetType() != null) existing.setAssetType(a.getAssetType());
+        if (a.getAssetCode() != null) existing.setAssetCode(a.getAssetCode());
+        if (a.getDescription() != null) existing.setDescription(a.getDescription());
+        if (a.getStatus() != null) existing.setStatus(a.getStatus());
+        
+        boolean ok = dao.update(existing);
         writeJson(resp, ok ? 200 : 500, ok ? "success" : "error", ok ? "Asset updated" : "Update failed", null);
     }
 

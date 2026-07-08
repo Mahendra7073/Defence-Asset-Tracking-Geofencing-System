@@ -74,4 +74,46 @@ document.addEventListener('DOMContentLoaded', function() {
     Assets.loadAll();
     var filter = document.getElementById('filter-asset-type');
     if (filter) filter.addEventListener('change', function() { Assets.loadAll(this.value); });
+
+    // Modal selectors
+    var addBtn     = document.getElementById('btn-add-asset');
+    var modal      = document.getElementById('add-asset-modal');
+    var closeBtn   = document.getElementById('close-asset-modal');
+    var cancelBtn  = document.getElementById('btn-cancel-asset');
+    var form       = document.getElementById('add-asset-form');
+
+    if (addBtn && modal) {
+        addBtn.addEventListener('click', function() {
+            modal.style.display = 'flex';
+        });
+    }
+
+    var closeModal = function() {
+        if (modal) {
+            modal.style.display = 'none';
+            if (form) form.reset();
+        }
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name = document.getElementById('new-asset-name').value.trim();
+            var code = document.getElementById('new-asset-code').value.trim();
+            var type = document.getElementById('new-asset-type').value;
+            var desc = document.getElementById('new-asset-desc').value.trim();
+
+            Assets.create({
+                assetName: name,
+                assetCode: code,
+                assetType: type,
+                description: desc,
+                status: 'active'
+            });
+            closeModal();
+        });
+    }
 });

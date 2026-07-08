@@ -48,8 +48,8 @@ var Users = {
     },
 
     toggleRole: function(id, currentRole) {
-        var roles = ['admin', 'operator', 'viewer'];
-        var idx = roles.indexOf(currentRole);
+        var roles = ['ADMIN', 'OPERATOR', 'VIEWER'];
+        var idx = roles.indexOf((currentRole || '').toUpperCase());
         var newRole = roles[(idx + 1) % roles.length];
         if (!confirm('Change role to ' + newRole + '?')) return;
         API.put('/users/' + id, { role: newRole })

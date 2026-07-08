@@ -282,18 +282,6 @@ var MapController = {
                         (isSelected ? '❌ Unfollow' : '🎯 Follow Asset') + '</button>' +
                         '</div>';
 
-                    var onMarkerClick = function() {
-                        var feature = self.assetCache.find(function(f) { return f.properties.assetId === id; });
-                        if (feature) {
-                            var p = feature.properties;
-                            var status = 'idle';
-                            if (p.speed > 2) status = 'moving';
-                            var lastUpdate = p.recordedAt ? new Date(p.recordedAt) : null;
-                            if (lastUpdate && (new Date() - lastUpdate) > 60000) status = 'offline';
-                            self.showAssetDetailsCard(p, status);
-                        }
-                    };
-
                     if (self.assetMarkers[id]) {
                         // Animate marker move over 5000ms (100 steps)
                         var prev = self.prevPositions[id];
@@ -314,17 +302,15 @@ var MapController = {
                         var marker = L.marker([newLat, newLng], { icon: icon })
                             .bindPopup(popupContent)
                             .addTo(self.assetLayer);
-                        marker.on('click', onMarkerClick);
                         self.assetMarkers[id] = marker;
                     }
 
                     // Keep track of coordinates
                     self.prevPositions[id] = { lat: newLat, lng: newLng };
 
-                    // Follow mode: pan map and refresh details card in real-time
+                    // Follow mode: pan map in real-time
                     if (isSelected) {
                         self.map.panTo([newLat, newLng]);
-                        self.showAssetDetailsCard(p, status);
                     }
                 });
             })

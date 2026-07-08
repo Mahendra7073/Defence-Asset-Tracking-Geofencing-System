@@ -22,6 +22,7 @@ public class AlertServlet extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
         String unack = req.getParameter("unack");
         String severity = req.getParameter("severity");
+        String period = req.getParameter("period");
         int limit = 50;
         try { limit = Integer.parseInt(req.getParameter("limit")); } catch (Exception ignored) {}
 
@@ -29,7 +30,7 @@ public class AlertServlet extends HttpServlet {
         if ("true".equals(unack)) {
             alerts = dao.findUnacknowledged();
         } else {
-            alerts = dao.findAll(limit, severity);
+            alerts = dao.findAll(limit, severity, period);
         }
         JsonArray arr = gson.toJsonTree(alerts).getAsJsonArray();
         JsonObject out = new JsonObject();

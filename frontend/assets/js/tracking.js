@@ -43,6 +43,14 @@ var Tracking = {
         var end       = endEl    ? endEl.value     : '';
 
         if (!assetId) { alert('Please select an asset.'); return; }
+        if (start && end && new Date(start) > new Date(end)) {
+            if (typeof App !== 'undefined' && App.showToast) {
+                App.showToast('Start date cannot be after end date.', 'warning');
+            } else {
+                alert('Start date cannot be after end date.');
+            }
+            return;
+        }
 
         Tracking.reset();
         Tracking.setStatus('Loading route data…');
@@ -327,6 +335,12 @@ var Tracking = {
         var progressEl = document.getElementById('route-progress');
         if (progressEl) progressEl.textContent = '0 / 0';
 
+        // Issue 6: Reset stats panel values
+        var d = document.getElementById('route-distance'); if (d) d.textContent = '—';
+        var s = document.getElementById('route-speed');    if (s) s.textContent = '—';
+        var dur = document.getElementById('route-duration'); if (dur) dur.textContent = '—';
+        var pts = document.getElementById('route-points');   if (pts) pts.textContent = '—';
+
         Tracking.setStatus('Ready. Select an asset and click Load Route.');
     },
 
@@ -357,9 +371,28 @@ var Tracking = {
         Tracking.pause();
         Tracking.playbackIndex = Math.max(0, Math.min(parseInt(idx), Tracking.routePoints.length - 1));
         var pos = Tracking.routePoints[Tracking.playbackIndex];
+
+        // Issue 2: Create moving marker if it doesn't exist yet
+        if (pos && !Tracking.movingMarker && MapController && MapController.map) {
+            var icon = L.divIcon({
+                className: '',
+                html: '<div style="width:16px;height:16px;background:#ffab00;border:3px solid #fff;border-radius:50%;box-shadow:0 0 10px rgba(255,171,0,0.85);"></div>',
+                iconSize: [16, 16], iconAnchor: [8, 8]
+            });
+            Tracking.movingMarker = L.marker(pos, { icon: icon }).addTo(MapController.map);
+        }
         if (pos && Tracking.movingMarker) {
             Tracking.movingMarker.setLatLng(pos);
         }
+
+        // Issue 3: Recalculate distance travelled up to scrubbed position
+        Tracking.distanceTravelled = 0;
+        for (var i = 1; i <= Tracking.playbackIndex; i++) {
+            Tracking.distanceTravelled += Tracking.latLngDistM(Tracking.routePoints[i - 1], Tracking.routePoints[i]);
+        }
+        var distEl = document.getElementById('route-dist-travelled');
+        if (distEl) distEl.textContent = (Tracking.distanceTravelled / 1000).toFixed(3) + ' km';
+
         if (Tracking.timestamps[Tracking.playbackIndex]) {
             var tsEl = document.getElementById('route-current-time');
             if (tsEl) tsEl.textContent = new Date(Tracking.timestamps[Tracking.playbackIndex]).toLocaleString('en-IN');

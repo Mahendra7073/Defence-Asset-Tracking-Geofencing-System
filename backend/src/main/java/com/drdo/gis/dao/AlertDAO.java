@@ -38,14 +38,26 @@ public class AlertDAO {
     }
 
     public List<Alert> findAll(int limit, String severity) {
+        return findAll(limit, severity, null);
+    }
+
+    public List<Alert> findAll(int limit, String severity, String period) {
         String sql = "SELECT al.id, al.asset_id, al.zone_id, al.alert_type, al.severity, "
                    + "al.lat, al.lng, al.acknowledged, al.ack_by, al.ack_at, al.triggered_at, "
                    + "a.asset_name, gz.zone_name "
                    + "FROM alerts al "
                    + "JOIN assets a ON a.id = al.asset_id "
-                   + "JOIN geofence_zones gz ON gz.id = al.zone_id ";
+                   + "JOIN geofence_zones gz ON gz.id = al.zone_id "
+                   + "WHERE 1=1 ";
         if (severity != null && !severity.isBlank()) {
-            sql += "WHERE al.severity = ? ";
+            sql += "AND al.severity = ? ";
+        }
+        if (period != null && !period.isBlank() && !"all".equals(period)) {
+            if ("week".equals(period)) {
+                sql += "AND al.triggered_at >= NOW() - INTERVAL '7 days' ";
+            } else if ("month".equals(period)) {
+                sql += "AND al.triggered_at >= NOW() - INTERVAL '30 days' ";
+            }
         }
         sql += "ORDER BY al.triggered_at DESC";
         if (limit > 0) {

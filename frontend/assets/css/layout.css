@@ -26,6 +26,41 @@
     overflow: hidden;
 }
 
+/* ---------- Collapsible Sidebar ---------- */
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed);
+}
+
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .nav-section-label,
+.sidebar.collapsed .nav-badge,
+.sidebar.collapsed .user-info,
+.sidebar.collapsed .sidebar-user .user-avatar {
+    display: none;
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: var(--space-sm);
+    margin: 2px var(--space-xs);
+}
+
+.sidebar.collapsed .nav-item .nav-icon {
+    width: 36px;
+    height: 36px;
+    font-size: var(--font-size-lg);
+}
+
+.sidebar.collapsed .sidebar-footer {
+    padding: var(--space-sm);
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar.collapsed ~ .main-content {
+    margin-left: var(--sidebar-collapsed);
+}
+
 .sidebar-header {
     height: var(--header-height);
     display: flex;
@@ -285,5 +320,21 @@
 
     .main-content {
         margin-left: 0;
+        max-width: 100%;
     }
 }
+
+@media (max-width: 768px) {
+    .header {
+        height: auto;
+        min-height: var(--header-height);
+        padding: var(--space-sm) var(--space-md);
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+    .header-right {
+        gap: var(--space-sm);
+        flex-wrap: wrap;
+    }
+}
+

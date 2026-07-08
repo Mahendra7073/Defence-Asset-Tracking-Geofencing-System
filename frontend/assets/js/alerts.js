@@ -75,6 +75,11 @@ var Alerts = {
 
     startPolling: function(ms) {
         setInterval(function() { Alerts.loadAlerts(); }, ms || 15000);
+    },
+
+    // Alias for app.js compatibility
+    startAutoRefresh: function(ms) {
+        Alerts.startPolling(ms);
     }
 };
 

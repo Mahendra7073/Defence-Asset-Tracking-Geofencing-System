@@ -27,7 +27,6 @@ Defence-Asset-Tracking-Geofencing-System/
 ├── SECURITY.md             # Security review and best practices
 │
 ├── database/               # PostgreSQL database schema and migrations
-│   ├── defence_gis.sql     # Base database schema seed script
 │   └── migrations/         # Flyway-compliant SQL migration scripts
 │       ├── V002__schema_fixes_and_geofencing.sql
 │       ├── V003__bcrypt_passwords_and_seed_data.sql

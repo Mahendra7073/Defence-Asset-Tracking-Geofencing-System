@@ -10,7 +10,7 @@ var Reports = {
     load: function() {
         var period = document.getElementById('report-period');
         var val = period ? period.value : 'week';
-        API.get('/alerts', { limit: 100 })
+        API.get('/alerts', { limit: 100, period: val })
             .then(function(res) {
                 if (res.status === 'success' && res.data) {
                     Reports.updateStats(res.data);
@@ -95,7 +95,9 @@ var Reports = {
     },
 
     exportCSV: function() {
-        API.get('/alerts', { limit: 500 })
+        var period = document.getElementById('report-period');
+        var val = period ? period.value : 'week';
+        API.get('/alerts', { limit: 500, period: val })
             .then(function(res) {
                 if (res.status !== 'success' || !res.data) return;
                 var csv = 'DateTime,Asset,Zone,Type,Severity,Status\n';

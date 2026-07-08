@@ -21,13 +21,23 @@
    - [REST API Reference](#rest-api-reference)
    - [GIS Layer Flow (Spatial Data Pipeline)](#gis-layer-flow-spatial-data-pipeline)
    - [Real-Time Simulation & Alert Engines](#real-time-simulation--alert-engines)
-10. [Troubleshooting & Common Errors](#-troubleshooting--common-errors)
-11. [Production Deployment Guide](#-production-deployment-guide)
-12. [Security, Performance & Code Standards](#-security-performance--code-standards)
-13. [Future Improvements](#-future-improvements)
-14. [License & Contributing](#-license--contributing)
+10. [Project Documentation Guides](#-project-documentation-guides)
+11. [Troubleshooting & Common Errors](#-troubleshooting--common-errors)
+12. [Production Deployment Guide](#-production-deployment-guide)
+13. [Security, Performance & Code Standards](#-security-performance--code-standards)
+14. [Future Improvements](#-future-improvements)
+15. [License & Contributing](#-license--contributing)
 
 ---
+
+## 📚 Project Documentation Guides
+To help developers and operators quickly navigate the platform features and deployment runbooks:
+- 📖 [System Wiki / Knowledge Base](WIKI.md) — Architectural workflows, simulation logic, spatial calculation formulas, and operational notes.
+- 🚀 [v1.2.0 Release Notes](RELEASE_NOTES.md) — Live changelog and feature details for the current stable release.
+- 🐳 [Docker & WSL2 Guide](DOCKER_GUIDE.md) — Detailed container management commands, multi-stage build logs, and volume cleanups.
+- ⚙️ [Prerequisites Installation Guide](INSTALLATION.md) — Local workstation software requirements and configurations.
+- 🖥️ [Tomcat Deployment Guide](DEPLOYMENT.md) — Manual compilation and WAR package deployment steps.
+
 
 ## ⚡ Project Overview
 The **Defence Asset Tracking & Geofencing System** is a mission-critical, production-grade spatial intelligence platform designed for securing military bases, monitoring troop movements, and geofencing sensitive defence perimeters (e.g., ammo depots, restricted airfields, and safe sectors). 
